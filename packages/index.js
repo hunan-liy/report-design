@@ -1,13 +1,13 @@
 /* 引入下面三行 */
-import ElementUI from 'element-ui';
-import 'element-ui/lib/theme-chalk/index.css';
-
+import ElementUI from "element-ui";
+import "element-ui/lib/theme-chalk/index.css";
 
 // 导入组件
 import RdDialog from "./rd-dialog";
+import RdForm from "./rd-form";
 
 // 存储组件列表
-const components = [RdDialog];
+const components = [RdDialog, RdForm];
 
 // 定义 install 方法，接收 Vue 作为参数。如果使用 use 注册插件，则所有的组件都将被注册
 const install = function (Vue) {

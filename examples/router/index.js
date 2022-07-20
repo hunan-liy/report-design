@@ -11,13 +11,15 @@ const routes = [
     component: HomeView
   },
   {
-    path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
-  }
+    path: '/rd-form',
+    name: 'rd-form',
+    component: () => import('../views/test/rd-form.vue')
+  },
+  {
+    path: '/rd-dialog',
+    name: 'rd-dialog',
+    component: () => import('../views/test/rd-dialog.vue')
+  },
 ]
 
 const router = new VueRouter({
