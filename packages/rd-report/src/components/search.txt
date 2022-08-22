@@ -1,0 +1,266 @@
+<!-- TODO: 不建议用使用hy-table的header插槽去做，因为这样可能通过配置生成了多个查询区，这一块的逻辑还未处理，待后续产品确认之后再做优化 -->
+<template>
+  <div class="hy-search">
+    <template v-if="showType === typeMap.btn">
+      <el-hy-dialog
+        :title="dialogTitle"
+        :visible.sync="dialogVisible"
+        v-bind="layoutConfig"
+        :custom-class="'hy-search'"
+        @close="closeDialog"
+      >
+        <div class="hy-search-body">
+          <el-form-list
+            ref="formList"
+            :config="config"
+            :formConfig="formConfig"
+            :value="value"
+            :dropList="dropList"
+            @input="formDataInput"
+            @submit="formSubmit"
+          >
+            <template
+              v-for="item in formSlots"
+              :slot="item.slotName"
+              slot-scope="scope"
+            >
+              <slot :name="item.slotName" v-bind="scope" />
+            </template>
+          </el-form-list>
+          <div class="isHold">
+            <el-radio v-model="isHold" :label="true">是否保留查询条件</el-radio>
+            <div class="isHold-mock" @click="isHoldChange"></div>
+          </div>
+        </div>
+        <div slot="footer" class="dialogForm-footer">
+          <el-button type="primary" size="small" @click="submit">
+            确定
+          </el-button>
+          <el-button type="primary" size="small" @click="reset">
+            重置
+          </el-button>
+          <el-button type="primary" size="small" @click="closeDialog">
+            取消
+          </el-button>
+        </div>
+      </el-hy-dialog>
+      <el-button
+        type="primary"
+        v-bind="header"
+        class="fixedBtnWidth"
+        @click="btnClick"
+      >
+        {{ header.label }}
+      </el-button>
+    </template>
+    <template v-else>
+      <el-form-list
+        ref="formList"
+        v-bind="header.props"
+        :config="config"
+        :formConfig="formConfig"
+        @submit="formListSubmit"
+      >
+        <div slot="searchBtns" class="searchBtns">
+          <el-button type="primary" @click="submit">
+            查询
+          </el-button>
+          <el-button type="primary" @click="reset">
+            重置
+          </el-button>
+        </div>
+      </el-form-list>
+    </template>
+  </div>
+</template>
+<script>
+import ElButton from 'element-ui/packages/button';
+import ElFormList from 'element-ui/packages/form-list';
+import { cloneDeep } from 'lodash';
+
+let typeMap = {
+  btn: 1, // 按钮（点击弹窗展示）
+  form: 2 // 直接form展示
+};
+export default {
+  components: {
+    ElButton,
+    ElFormList
+  },
+  props: {
+    header: {
+      type: Object,
+      default: () => {
+        return {};
+      }
+    }
+  },
+  data() {
+    return {
+      typeMap,
+      config: {},
+      formConfig: {},
+      value: {},
+      dropList: {},
+      formSlots: [],
+      dialogTitle: '',
+      dialogVisible: false,
+      isHold: true
+    };
+  },
+  computed: {
+    /** 页面展示形式 1按钮（点击弹窗展示） 2直接form展示 */
+    showType() {
+      return this.header.showType || typeMap.btn;
+    },
+    layoutConfig() {
+      let { top, closeOnClickModal = false, appendToBody = true } = this.header.layoutConfig || {};
+
+      if (!top) {
+        top = '15vh';
+      }
+      return {
+        top,
+        closeOnClickModal,
+        appendToBody,
+        ...this.header.layoutConfig
+      };
+    }
+  },
+  methods: {
+    /** 处理数据 */
+    handleHeader(data) {
+      let { title, config, formConfig, value, dropList } =
+        this.header.props || {};
+      this.dialogTitle = title;
+      // 处理config
+      if (this.showType === typeMap.btn) {
+        config = {
+          size: 'small',
+          col: 12,
+          ...config
+        };
+      } else {
+        config = {
+          size: 'mini',
+          col: 12,
+          ...config
+        };
+      }
+      this.config = cloneDeep(config);
+      // 处理formConfig
+      if (this.showType !== typeMap.btn) {
+        formConfig['searchBtns'] = {
+          type: 'slot',
+          slotType: 'item',
+          width: '130px'
+        };
+      }
+      formConfig &&
+        Object.entries(formConfig).forEach(([prop, ele]) => {
+          let { type, slotName, propGroup = [] } = ele;
+          if (type === 'slot') {
+            if (!slotName) {
+              slotName = prop;
+            }
+
+            this.formSlots.push({
+              type,
+              prop,
+              slotName
+            });
+          }
+
+          // 因为采用的是按钮的形式，如果没有点击按钮，dialog是没有打开，就没办法触发form-list的逻辑，在这个时候要自己拼全value
+          propGroup = propGroup.length > 0 ? propGroup : [prop];
+          propGroup.forEach((_prop) => {
+            if (this.value[_prop] === undefined) {
+              let value = this.value[_prop];
+              /**
+               * checkbox-group/transfer 比较特殊，如果初始没有值的话checkbox-group/transfer是显示不出来的
+               * 而且对于checkbox-group/transfer的rules会在每次noticDataChange直接触发，猜测是因为checkbox-group/transfer的rules的检测是根据指针指向变化来检测的而数据每次都是深拷贝的，这个地方属于bug，待优化
+               */
+              if (type === 'checkbox' || type === 'transfer') {
+                value = value === undefined ? [] : value;
+              } else {
+                value = value === undefined ? null : value;
+              }
+              this.$set(this.value, _prop, value);
+            }
+          });
+        });
+      this.formConfig = cloneDeep(formConfig);
+      // 处理value
+      let value_ = Object.assign(this.value, value);
+      this.value = cloneDeep(value_);
+      // 处理dropList
+      this.dropList = cloneDeep(dropList);
+
+      this.formDataInput(this.value);
+    },
+
+    /** form-list的input事件 */
+    formDataInput(params) {
+      this.$emit('merge', params);
+    },
+
+    /** 按钮点击事件 */
+    btnClick() {
+      this.openDialog();
+    },
+
+    /** 打开弹窗 */
+    openDialog() {
+      this.dialogVisible = true;
+    },
+
+    /** 关闭弹窗 */
+    closeDialog() {
+      this.dialogVisible = false;
+    },
+
+    /** 提交事件 */
+    submit() {
+      this.$refs.formList.submitForm();
+    },
+
+    /** 重置 */
+    reset() {
+      this.$refs.formList.resetForm();
+    },
+
+    /** form-list的submit事件 */
+    formSubmit(params) {
+      this.noticSubmit(params);
+      if (!this.isHold) {
+        this.reset();
+      }
+      this.closeDialog();
+    },
+
+    /** formList的提交事件 */
+    formListSubmit(params) {
+      this.noticSubmit(params);
+    },
+
+    /** 通知父组件查询 */
+    noticSubmit(params) {
+      this.$emit('submit', params);
+    },
+
+    /** 是否保存查询条件点击事件 */
+    isHoldChange() {
+      this.isHold = !this.isHold;
+    }
+  },
+  watch: {
+    header: {
+      handler(newVal) {
+        this.handleHeader(newVal);
+      },
+      immediate: true,
+      deep: true
+    }
+  }
+};
+</script>
