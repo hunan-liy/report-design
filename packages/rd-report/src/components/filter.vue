@@ -209,7 +209,7 @@ export default {
 //   }
 //   // 重置按钮点击事件
 //   resetClick() {
-//     this.$refs.jyfForm.resetForm();
+//     this.$refs.jyfForm.resetFields();
 //     this.summit();
 //   }
 //   // form表单change事件

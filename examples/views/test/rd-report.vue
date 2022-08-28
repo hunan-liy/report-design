@@ -80,11 +80,7 @@ export default {
         }
       ],
       httpConfig: {
-        url: 'https://www.fastmock.site/mock/de66cd0ff6569e78bb9857a0e42035f9/report-design/getReportData',
-        paramFormatter: (params) => {
-          params.formno = '118020';
-          return params;
-        }
+        url: 'https://www.fastmock.site/mock/de66cd0ff6569e78bb9857a0e42035f9/report-design/getReportData'
       }
     };
   },

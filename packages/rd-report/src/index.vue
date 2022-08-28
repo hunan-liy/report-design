@@ -1,7 +1,7 @@
 <template>
   <div ref="rdReport" class="rd-report">
     <div ref="filter" class="rd-report-header">
-      <filters :filters="filters" @flodClick="flodClick"></filters>
+      <filters :filters="filters" @flodClick="flodClick" @merge="mergeSearchParams" @submit="searchSubmit"></filters>
     </div>
     <div class="rd-report-body">
       <rd-table
@@ -38,25 +38,6 @@
         @size-change="sizeChange"
         @current-change="currentChange"
       >
-        <!-- <span class="el-pagination__slot"
-          >共 {{ pagination_.total }} 条
-          <span class="el-pagination__sizes">
-            <el-select
-              :value="pagination_.pageSize"
-              :disabled="pagination_.disabled"
-              size="mini"
-              @change="sizeChange"
-            >
-              <el-option
-                v-for="(item, index) in pagination_.pageSizes"
-                :key="index"
-                :value="item"
-                :label="item + '条/页'"
-              >
-              </el-option>
-            </el-select>
-          </span>
-        </span> -->
       </el-pagination>
     </div>
   </div>

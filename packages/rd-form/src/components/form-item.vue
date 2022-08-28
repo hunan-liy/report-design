@@ -153,7 +153,11 @@
     v-else-if="formItem.type === 'slider'"
     class="el-form-item-content padding"
   >
+    <template v-if="readonly">
+      <span class="padding">{{ forms_[prop] }}</span>
+    </template>
     <el-slider
+      v-else
       v-model="forms_[prop]"
       v-bind="formProps"
       class="deep"
@@ -192,6 +196,7 @@
     <el-rate
       v-model="forms_[prop]"
       v-bind="formProps"
+      :disabled="readonly || isDisabled"
       @change="change()"
     ></el-rate>
   </div>
@@ -203,6 +208,7 @@
     <el-color-picker
       v-model="forms_[prop]"
       v-bind="formProps"
+      :disabled="readonly || isDisabled"
       @change="change()"
     ></el-color-picker>
   </div>
@@ -214,22 +220,22 @@
     @change="change()"
   ></el-transfer>
   <!-- SelectDialog 业务对话框 -->
-  <!-- <div
+  <div
     v-else-if="formItem.type === 'selectDialog'"
     class="el-form-item-content padding0"
   >
     <template v-if="readonly">
       <span class="padding">{{ getSelectDialogLabel }}</span>
     </template>
-    <el-hy-select-dialog
+    <rd-select-dialog
       v-else
       v-model="forms_[prop]"
       v-bind="formProps"
       class="deep"
       @change="selectDialogChange"
     >
-    </el-hy-select-dialog>
-  </div> -->
+    </rd-select-dialog>
+  </div>
   <!-- Upload 上传组件 -->
   <!-- <div
     v-else-if="formItem.type === 'upload'"
@@ -308,7 +314,10 @@ export default {
         if (Array.isArray(this.dropList[this.prop])) {
           return this.dropList[this.prop];
         } else {
-          return this.dropList[this.prop](this.forms_[this.prop], this.formItem);
+          return this.dropList[this.prop](
+            this.forms_[this.prop],
+            this.formItem
+          );
         }
       }
       return [];
@@ -415,8 +424,8 @@ export default {
   },
   watch: {
     forms: {
-      handler(newVal){
-        this.forms_ = newVal
+      handler(newVal) {
+        this.forms_ = newVal;
       },
       deep: true,
       immediate: true
@@ -461,37 +470,37 @@ export default {
 
 // ::v-deep {
 
-  .input-number,
-  .el-select,
-  .el-cascader,
-  .el-slider {
-    width: 100%;
-  }
+.input-number,
+.el-select,
+.el-cascader,
+.el-slider {
+  width: 100%;
+}
 
-  .el-date-editor {
-    width: 100% !important;
-  }
+.el-date-editor {
+  width: 100% !important;
+}
 
-  .el-transfer {
-    text-align: left;
-  }
+.el-transfer {
+  text-align: left;
+}
 
-  /** size 为small下的样式调整 start */
-  // .el-input--small,
-  // .el-input-number--small,
-  // .el-select--small,
-  // .el-cascader--small {
-  //   display: block;
-  // }
+/** size 为small下的样式调整 start */
+// .el-input--small,
+// .el-input-number--small,
+// .el-select--small,
+// .el-cascader--small {
+//   display: block;
+// }
 
-  .el-input--small input {
-    display: block;
-  }
+.el-input--small input {
+  display: block;
+}
 
-  .el-button--small {
-    padding: 8px 13px;
-  }
+.el-button--small {
+  padding: 8px 13px;
+}
 
-  /** size 为small下的样式调整 end */
+/** size 为small下的样式调整 end */
 // }
 </style>

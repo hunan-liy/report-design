@@ -30,6 +30,11 @@ const routes = [
     name: 'rd-report',
     component: () => import('../views/test/rd-report.vue')
   },
+  {
+    path: '/rd-select-dialog',
+    name: 'rd-select-dialog',
+    component: () => import('../views/test/rd-select-dialog.vue')
+  },
 ]
 
 const router = new VueRouter({

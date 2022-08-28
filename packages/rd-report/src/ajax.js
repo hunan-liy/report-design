@@ -29,8 +29,8 @@ function xhrHandle(options = {}) {
   var contentType =
     options.contentType ||
     header['Content-Type'] ||
-    'application/x-www-form-urlencoded'; // 设置默认的请求类型
-
+    'application/json;charset=UTF-8'; // 设置默认的请求类型
+  header['Content-Type'] = contentType;
   var data; // data为post发送数据
   // 当花括号内容只有一行时，可以省略
   if (contentType.indexOf('json') > -1 && options.data) {
@@ -66,8 +66,6 @@ function xhrHandle(options = {}) {
   };
   // 配置请求类型和目的地址
   xhr.open(type, url, async);
-  // 设置请求头
-  xhr.setRequestHeader('content-type', contentType);
   // 处理请求头
   Object.keys(header).forEach((key) => {
     xhr.setRequestHeader(key, header[key]);

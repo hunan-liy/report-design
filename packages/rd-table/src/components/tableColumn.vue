@@ -127,7 +127,7 @@
     <template v-if="readonly">
       <span>{{ value }}</span>
     </template>
-    <el-hy-select-dialog
+    <rd-select-dialog
       v-else
       :value="value"
       v-bind="props"
@@ -143,7 +143,7 @@
       @change="selectDialogChange"
       @change-row="changeRow"
     >
-    </el-hy-select-dialog>
+    </rd-select-dialog>
   </div>
   <!-- Operation 操作列 -->
   <div v-else-if="type === 'operation'" class="rd-table-column">

@@ -26,6 +26,8 @@ module.exports = [
       { title: 'Dialog 对话框', path: getPath('dialog'), collapsable: false },
       { title: 'Form 表单', path: getPath('form'), collapsable: false },
       { title: 'Table 表格', path: getPath('table'), collapsable: false },
+      { title: 'Report 报表', path: getPath('report'), collapsable: false },
+      { title: 'SelectDailog 弹窗选择器', path: getPath('select-dialog'), collapsable: false },
     ],
   },
 ];

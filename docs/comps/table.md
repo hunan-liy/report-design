@@ -631,7 +631,7 @@ export default {
 
 :::demo
 ```html
-<re-table ref="table" :table="table" :tableColumns="tableColumns" :tableData="tableData" @row-item-click="rowClick">
+<rd-table ref="table" :table="table" :tableColumns="tableColumns" :tableData="tableData" @row-item-click="rowClick">
 </rd-table>
 <script>
 export default {

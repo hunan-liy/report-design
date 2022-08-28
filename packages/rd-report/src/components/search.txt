@@ -226,7 +226,7 @@ export default {
 
     /** 重置 */
     reset() {
-      this.$refs.formList.resetForm();
+      this.$refs.formList.resetFields();
     },
 
     /** form-list的submit事件 */

@@ -18,7 +18,7 @@
           :config="config"
           :formConfig="formConfig_"
           class="form"
-          @change="formDataChange"
+          @input="formDataChange"
           @submit="submitForm"
         >
           <template v-for="item in formSlots" v-slot:[item.slotName]="scope">
@@ -85,9 +85,7 @@ export default {
     initData(data) {
       let { config = {}, formConfig = {}, value = {}, dropList = {} } = data;
       this.initConfig(config);
-      this.$nextTick(() => {
-        this.initFormConfig(formConfig);
-      });
+      this.initFormConfig(formConfig);
       this.filtersData_ = value;
       this.dropList = dropList;
     },
@@ -105,45 +103,25 @@ export default {
       let formConfigArray = Object.entries(formConfig);
       let formConfig_ = {};
 
-      if (formConfigArray.length > 4) {
+      let { col = 6 } = this.config;
+      let length = 24 / col;
+
+      if (formConfigArray.length > length) {
         this.isShowFoldButton = true;
       } else {
         this.isShowFoldButton = false;
       }
 
-      let width = 0;
-      let formWidth =
-        this.$refs.rdForm.$el.clientWidth -
-        20 -
-        this.$refs.rdForm.$el.clientWidth * 0.2;
       formConfigArray.map(([prop, ele], index) => {
-        if (!ele.col && !ele.width) {
-          ele.col = this.config.col ? this.config.col : 8;
-        }
-
-        if (ele.col) {
-          width = formWidth * (ele.col / 24);
-        } else if (ele.width) {
-          let w = 0;
-          if (ele.width.indexOf('px') !== -1) {
-            w = parseFloat(ele.width.split('px')[0]);
-          } else if (ele.width.indexOf('%') !== -1) {
-            w = (formWidth * parseFloat(ele.width.split('%')[0])) / 100;
-          }
-          width = width + w;
-        }
-
         formConfig_[prop] = {
-          width,
           ...ele
         };
-        if (formConfigArray.length > 4 && index === 3) {
+        if (formConfigArray.length > length && index === length - 2) {
           let prop_ = '&rd_filters' + Math.ceil(Math.random() * 10000);
           formConfig_[prop_] = {
             type: 'slot',
             slotName: 'filters-button',
             slotType: 'item',
-            width: '20%',
             hidden: () => {
               return !this.isFold;
             }
@@ -156,7 +134,6 @@ export default {
         type: 'slot',
         slotName: 'filters-button',
         slotType: 'item',
-        width: '20%',
         hidden: () => {
           return this.isFold;
         }
@@ -164,6 +141,70 @@ export default {
       this.formConfig_ = formConfig_;
       console.log('this.formConfig_', this.formConfig_);
     },
+
+    // initFormConfig(formConfig) {
+    //   let formConfigArray = Object.entries(formConfig);
+    //   let formConfig_ = {};
+
+    //   if (formConfigArray.length > 4) {
+    //     this.isShowFoldButton = true;
+    //   } else {
+    //     this.isShowFoldButton = false;
+    //   }
+
+    //   let width = 0;
+    //   let formWidth =
+    //     this.$refs.rdForm.$el.clientWidth -
+    //     20 -
+    //     this.$refs.rdForm.$el.clientWidth * 0.2;
+    //   formConfigArray.map(([prop, ele], index) => {
+    //     if (!ele.col && !ele.width) {
+    //       ele.col = this.config.col ? this.config.col : 8;
+    //     }
+
+    //     if (ele.col) {
+    //       width = formWidth * (ele.col / 24);
+    //     } else if (ele.width) {
+    //       let w = 0;
+    //       if (ele.width.indexOf('px') !== -1) {
+    //         w = parseFloat(ele.width.split('px')[0]);
+    //       } else if (ele.width.indexOf('%') !== -1) {
+    //         w = (formWidth * parseFloat(ele.width.split('%')[0])) / 100;
+    //       }
+    //       width = width + w;
+    //     }
+
+    //     formConfig_[prop] = {
+    //       width,
+    //       ...ele
+    //     };
+    //     if (formConfigArray.length > 4 && index === 3) {
+    //       let prop_ = '&rd_filters' + Math.ceil(Math.random() * 10000);
+    //       formConfig_[prop_] = {
+    //         type: 'slot',
+    //         slotName: 'filters-button',
+    //         slotType: 'item',
+    //         width: '20%',
+    //         hidden: () => {
+    //           return !this.isFold;
+    //         }
+    //       };
+    //     }
+    //   });
+
+    //   let prop_1 = '&rd_filters' + Math.ceil(Math.random() * 10000);
+    //   formConfig_[prop_1] = {
+    //     type: 'slot',
+    //     slotName: 'filters-button',
+    //     slotType: 'item',
+    //     width: '20%',
+    //     hidden: () => {
+    //       return this.isFold;
+    //     }
+    //   };
+    //   this.formConfig_ = formConfig_;
+    //   console.log('this.formConfig_', this.formConfig_);
+    // },
 
     /** 展开/收起 按钮点击事件 */
     flodClick(type) {
@@ -207,11 +248,13 @@ export default {
       return data;
     },
 
-    formDataChange(params) {
-      console.log(params);
+    formDataChange() {
+      this.$emit('merge', this.getFormData());
     },
 
-    submitForm() {}
+    submitForm() {
+      this.summit();
+    }
   }
 };
 </script>

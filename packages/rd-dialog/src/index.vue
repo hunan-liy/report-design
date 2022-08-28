@@ -19,18 +19,17 @@
       <span class="dialog-footer">
         <slot name="footer">
           <el-button
+            v-if="showCancelButton"
+            size="small"
+            @click="cancel"
+            >{{ cancelButtonText }}</el-button
+          >
+          <el-button
             v-if="showConfirmButton"
             type="primary"
             size="small"
             @click="confirm"
             >{{ confirmButtonText }}</el-button
-          >
-          <el-button
-            v-if="showCancelButton"
-            type="primary"
-            size="small"
-            @click="cancel"
-            >{{ cancelButtonText }}</el-button
           >
         </slot>
       </span>
@@ -54,10 +53,7 @@ export default {
       type: Boolean,
       default: true
     },
-    styleBox: {
-      type: String,
-      default: ''
-    },
+
     modalAppendToBody: {
       type: Boolean,
       default: true
@@ -185,6 +181,7 @@ export default {
      */
     cancel() {
       this.$emit('update:visible', false);
+      this.$emit('cancel');
       this.close();
     }
   }
@@ -194,31 +191,33 @@ export default {
 .rd-dialog {
   $minWidth: var(--minWidth);
 
-  .el-dialog {
-    min-width: $minWidth;
-  }
-
-  .el-dialog__body {
-    position: relative;
-    padding: 15px 15px 20px;
-    max-height: 600px;
-    overflow: hidden;
-    overflow-y: auto;
-  }
-
-  .dialog-footer {
-    display: flex;
-    justify-content: center;
-  }
-
-  .is-fullscreen {
-    display: flex;
-    flex-direction: column;
+  ::v-deep {
+    .el-dialog {
+      min-width: $minWidth;
+    }
 
     .el-dialog__body {
-      flex: 1;
-      height: 0;
-      max-height: unset !important;
+      position: relative;
+      padding: 15px 15px 20px;
+      max-height: 600px;
+      overflow: hidden;
+      overflow-y: auto;
+    }
+
+    .dialog-footer {
+      display: flex;
+      justify-content: center;
+    }
+
+    .is-fullscreen {
+      display: flex;
+      flex-direction: column;
+
+      .el-dialog__body {
+        flex: 1;
+        height: 0;
+        max-height: unset !important;
+      }
     }
   }
 }

@@ -1,5 +1,10 @@
 <template>
-  <el-form :model="forms" ref="dataForm" v-bind="config_" @validate="validate">
+  <el-form
+    :model="forms"
+    ref="dataForm"
+    v-bind="config_"
+    @validate="formValidate"
+  >
     <div class="form-wrap">
       <el-row>
         <template v-for="(formItem, index) in formList">
@@ -139,6 +144,8 @@ export default {
         size,
         ...data_clone
       };
+      console.log(this.config_);
+      
     },
 
     /**
@@ -314,26 +321,36 @@ export default {
     },
 
     // 重置表单
-    resetForm() {
-      this.formList.forEach((ele) => {
-        if (ele.propGroup) {
-          ele.propGroup.forEach((e) => {
-            this.forms[e] = null;
-          });
-        }
-      });
-      // 表单自带的重置功能只会将表单重置到第一次生成的状态，如果生成时forms有值，重置后的表单forms也就是生成时的值，所以采用手动重置办法，清空forms
-      Object.keys(this.forms).forEach((ele) => {
-        let { type } = this.formConfig[ele] || {};
-        // console.log('1111111111', type, this.formConfig, ele);
-        if (type === 'checkbox' || type === 'transfer') {
-          this.forms[ele] = [];
-        } else {
-          this.forms[ele] = null;
-        }
-      });
+    resetFields() {
+      let { resetToNull = true } = this.config_;
+      // 是否重置为null的状态
+      if (resetToNull) {
+        // 表单自带的重置功能只会将表单重置到第一次生成的状态，如果生成时forms有值，重置后的表单forms也就是生成时的值，所以采用手动重置办法，清空forms
+        this.formList.forEach((ele) => {
+          if (ele.propGroup) {
+            ele.propGroup.forEach((e) => {
+              this.forms[e] = null;
+            });
+          }
+        });
+
+        Object.keys(this.forms).forEach((ele) => {
+          let { type } = this.formConfig[ele] || {};
+          if (type === 'checkbox' || type === 'transfer') {
+            this.forms[ele] = [];
+          } else {
+            this.forms[ele] = null;
+          }
+        });
+      } else {
+        this.$refs.dataForm && this.$refs.dataForm.resetFields();
+      }
+
       this.noticDataChange();
       this.$emit('reset', this.getFormData());
+      this.$nextTick(() => {
+        this.clearValidate();
+      });
     },
 
     // 移除表单项的校验结果
@@ -363,8 +380,13 @@ export default {
       });
     },
 
+    /** 对表单进行校验 */
+    validate(callback) {
+      return this.$refs.dataForm && this.$refs.dataForm.validate(callback);
+    },
+
     /** 表单校验事件 */
-    validate(type, res, errorText) {
+    formValidate(type, res, errorText) {
       this.$emit('validate', type, res, errorText);
     },
 
@@ -375,6 +397,11 @@ export default {
       } else {
         return hidden;
       }
+    },
+
+    /** 获取数据方法-提供给外部使用 */
+    getValue() {
+      return this.getFormData();
     },
 
     /**
