@@ -241,7 +241,6 @@ export default {
             this.change(val);
           } catch (error) {
             console.log(error);
-            
           }
         }
       }
@@ -314,12 +313,18 @@ export default {
     /** 解析下拉值 */
     getDropList() {
       if (this.dropList[this.prop]) {
-        if (Array.isArray(this.dropList[this.prop])) {
-          return this.dropList[this.prop];
-        } else {
+        if (typeof this.dropList[this.prop] === 'function') {
           let { row, column, $index } = this.scope;
           return this.dropList[this.prop](row, column, this.value, $index);
+        } else {
+          return this.dropList[this.prop];
         }
+        // if (Array.isArray(this.dropList[this.prop])) {
+        //   return this.dropList[this.prop];
+        // } else {
+        //   let { row, column, $index } = this.scope;
+        //   return this.dropList[this.prop](row, column, this.value, $index);
+        // }
       }
       return [];
     },

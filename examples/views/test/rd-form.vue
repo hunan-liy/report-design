@@ -21,15 +21,16 @@ export default {
       config: {
         labelWidth: '200px',
         labelSuffix: '123',
-        hideRequiredAsterisk: true,
+        // hideRequiredAsterisk: true,
         // showMessage: false,
-        disabled: true,
-        readonly: true
+        // disabled: true,
+        // readonly: true
       },
       formConfig: {
         input: {
           type: 'input',
           label: 'input',
+          // showMessage: false,
           props: {
             type: 'textarea',
             rows: 8
@@ -39,7 +40,7 @@ export default {
       },
       // 设置初始值
       forms: {
-        input: 'input'
+        input: ''
       },
       // 选项数据值
       dropList: {}

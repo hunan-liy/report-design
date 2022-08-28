@@ -9,7 +9,7 @@
       <el-row>
         <template v-for="(formItem, index) in formList">
           <el-col
-            v-show="!getHidden(formItem.hidden)"
+            v-show="!getHidden(formItem)"
             :key="'col' + index"
             v-bind="colConfig(formItem)"
           >
@@ -20,7 +20,7 @@
                 :name="formItem.slotName"
                 :value="forms[formItem.prop]"
                 :formItem="formItem"
-                :dropList="dropList[formItem.prop]"
+                :dropList="getDropList(formItem)"
               />
             </template>
             <template v-else>
@@ -49,7 +49,7 @@
                         :name="formItem.slotName"
                         :value="forms[formItem.prop]"
                         :formItem="formItem"
-                        :dropList="dropList[formItem.prop]"
+                        :dropList="getDropList(formItem)"
                       />
                     </template>
                   </form-item>
@@ -145,7 +145,6 @@ export default {
         ...data_clone
       };
       console.log(this.config_);
-      
     },
 
     /**
@@ -194,13 +193,13 @@ export default {
             'timePicker',
             'datePicker'
           ];
-          if (type === 'input') {
+          if (type === 'input' || type === 'inputSuffixes') {
             placeholder = `请输入${label}`;
           } else if (selectType.indexOf(type) !== -1) {
             placeholder = `请选择${label}`;
           }
         }
-
+        
         // 内置处理valueFormat 待优化！！
         let valueFormat;
         if (!props || (props && !props.valueFormat)) {
@@ -236,7 +235,12 @@ export default {
         }
 
         // 隐藏的字段不做校验
-        if (this.getHidden(hidden)) {
+        if (
+          this.getHidden({
+            hidden,
+            prop
+          })
+        ) {
           rules = null;
         }
 
@@ -268,6 +272,7 @@ export default {
           props: {
             placeholder,
             valueFormat,
+            clearable: true, // 内置处理clearable，默认为true
             ...props
           },
           rules
@@ -391,12 +396,35 @@ export default {
     },
 
     /** 获取是否隐藏 */
-    getHidden(hidden) {
+    getHidden(formItem) {
+      let { hidden, prop } = formItem;
       if (typeof hidden === 'function') {
-        return hidden();
+        return hidden(prop, this.forms, formItem);
       } else {
         return hidden;
       }
+    },
+
+    /** 解析下拉值 */
+    getDropList(formItem) {
+      let { prop } = formItem;
+      if (this.dropList[prop]) {
+        if (typeof this.dropList[prop] === 'function') {
+          return this.dropList[prop](prop, this.forms, formItem);
+        } else {
+          return this.dropList[prop];
+        }
+        // if (Array.isArray(this.dropList[this.prop])) {
+        //   return this.dropList[this.prop];
+        // } else {
+        //   return this.dropList[this.prop](
+        //     this.prop,
+        //     this.forms_,
+        //     this.formItem
+        //   );
+        // }
+      }
+      return [];
     },
 
     /** 获取数据方法-提供给外部使用 */

@@ -9,7 +9,9 @@ features:
   details: 通过界面样式和交互动效让用户可以清晰的感知自己的操作
 - title: 效率 Efficiency
   details: 界面简单直白，让用户快速识别而非回忆，减少用户记忆负担。
-footer: by饿了么
+- title: 可控 Controllability
+  details: 根据场景可给予用户操作建议或安全提示，但不能代替用户进行决策。
+footer: by李阳
 ---
 
 ### 设计原则

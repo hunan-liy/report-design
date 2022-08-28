@@ -15,6 +15,7 @@
       v-else
       v-model="forms_[prop]"
       v-bind="formProps"
+      :disabled="isDisabled"
       @change="change()"
     >
       <el-radio
@@ -38,6 +39,7 @@
       v-else
       v-model="forms_[prop]"
       v-bind="formProps"
+      :disabled="isDisabled"
       @change="change()"
     >
       <el-checkbox
@@ -61,7 +63,7 @@
       v-model="forms_[prop]"
       v-bind="formProps"
       class="deep"
-      :readonly="readonly"
+      :disabled="isDisabled"
       @input="change()"
     ></el-input>
   </div>
@@ -77,10 +79,14 @@
       v-else
       v-model="forms_[prop]"
       v-bind="formProps"
+      :disabled="isDisabled"
       class="deep"
       @input="change()"
     >
-      <template slot="append">{{ formItem.suffixes }}</template>
+      <template slot="append">
+        <div v-html="formItem.suffixes"></div>
+        <!-- {{ formItem.suffixes }} -->
+      </template>
     </el-input>
   </div>
   <!-- InputNumber 计数器 -->
@@ -95,6 +101,7 @@
       v-else
       v-model="forms_[prop]"
       v-bind="formProps"
+      :disabled="isDisabled"
       class="input-number"
       @input="change()"
     ></el-input-number>
@@ -111,6 +118,7 @@
       v-else
       v-model="forms_[prop]"
       v-bind="formProps"
+      :disabled="isDisabled"
       class="deep"
       @change="change()"
     >
@@ -134,6 +142,7 @@
       v-else
       v-model="forms_[prop]"
       v-bind="formProps"
+      :disabled="isDisabled"
       class="deep"
       :options="getDropList"
       @change="change()"
@@ -160,6 +169,7 @@
       v-else
       v-model="forms_[prop]"
       v-bind="formProps"
+      :disabled="isDisabled"
       class="deep"
       @change="change()"
     ></el-slider>
@@ -172,8 +182,9 @@
     <el-time-picker
       v-model="forms_[prop]"
       v-bind="formProps"
-      class="deep"
       :readonly="readonly"
+      :disabled="isDisabled"
+      class="deep"
       @change="change()"
     >
     </el-time-picker>
@@ -187,6 +198,7 @@
       v-model="forms_[prop]"
       v-bind="formProps"
       :readonly="readonly"
+      :disabled="isDisabled"
       @change="change()"
     >
     </el-date-picker>
@@ -217,6 +229,7 @@
     v-else-if="formItem.type === 'transfer'"
     v-model="forms_[prop]"
     v-bind="formProps"
+    :disabled="isDisabled"
     @change="change()"
   ></el-transfer>
   <!-- SelectDialog 业务对话框 -->
@@ -231,6 +244,7 @@
       v-else
       v-model="forms_[prop]"
       v-bind="formProps"
+      :disabled="isDisabled"
       class="deep"
       @change="selectDialogChange"
     >
@@ -305,27 +319,42 @@ export default {
     },
     isDisabled() {
       const { disabled = false } = this.formProps || {};
-      return disabled;
+      // return disabled;
+      if (typeof disabled === 'function') {
+        return disabled(this.prop, this.forms_, this.formItem);
+      } else {
+        return disabled;
+      }
     },
 
     /** 解析下拉值 */
     getDropList() {
       if (this.dropList[this.prop]) {
-        if (Array.isArray(this.dropList[this.prop])) {
-          return this.dropList[this.prop];
-        } else {
+        if (typeof this.dropList[this.prop] === 'function') {
           return this.dropList[this.prop](
-            this.forms_[this.prop],
+            this.prop,
+            this.forms_,
             this.formItem
           );
+        } else {
+          return this.dropList[this.prop];
         }
+        // if (Array.isArray(this.dropList[this.prop])) {
+        //   return this.dropList[this.prop];
+        // } else {
+        //   return this.dropList[this.prop](
+        //     this.prop,
+        //     this.forms_,
+        //     this.formItem
+        //   );
+        // }
       }
       return [];
     },
 
     /** 获取只读模式下的label ----- start */
     getReadonlyLabel() {
-      let ary = this.dropList[this.prop] || [];
+      let ary = this.getDropList();
       let label = [];
       let value = this.forms_[this.prop];
       ary.forEach((ele) => {
@@ -341,7 +370,7 @@ export default {
     },
 
     getCascaderLabel() {
-      let ary = this.dropList[this.prop] || [];
+      let ary = this.getDropList();
       let label = [];
       let value = this.forms_[this.prop];
       let flag = false;

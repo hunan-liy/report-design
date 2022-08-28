@@ -5,7 +5,8 @@ const markdown = require('./config/markdown');
 module.exports = {
   theme: '',
   title: 'report-design',
-  description: '汇阳UI库、项目组件、工具函数文档教程及示例代码',
+  description:
+    '报表设计器，通过数据驱动生成页面，300行代码生成一个功能完整的报表页',
   base: '/',
   port: '8089',
   themeConfig: {
