@@ -137,11 +137,9 @@
       clearable
       class="row-full"
       :rowData="row"
-      :hooks="hooks && hooks[prop]"
       :column="scope.column"
       :index="scope.$index"
       @change="selectDialogChange"
-      @change-row="changeRow"
     >
     </rd-select-dialog>
   </div>
@@ -183,22 +181,6 @@ export default {
      * 编辑行中下拉项的数据与tableColumns配合使用
      */
     dropList: {
-      type: Object,
-      default: () => {
-        return {};
-      }
-    },
-
-    /** 开窗选择 配置 */
-    dialogs: {
-      type: Object,
-      default: () => {
-        return {};
-      }
-    },
-
-    /** 开窗选择 回调配置 */
-    hooks: {
       type: Object,
       default: () => {
         return {};
@@ -346,19 +328,14 @@ export default {
 
     /** selectDialog 配置 */
     reportConfig() {
-      if (this.dialogs && this.dialogs[this.prop]) {
-        let dialogs = this.dialogs[this.prop];
-        return dialogs;
-      } else {
-        let { reportConfig } = this.props;
+      let { reportConfig } = this.props;
 
-        let config = reportConfig;
-        if (typeof reportConfig === 'function') {
-          let { row, column, $index } = this.scope;
-          config = reportConfig(row, column, this.value, $index);
-        }
-        return config;
+      let config = reportConfig;
+      if (typeof reportConfig === 'function') {
+        let { row, column, $index } = this.scope;
+        config = reportConfig(row, column, this.value, $index);
       }
+      return config;
     }
   },
   methods: {
@@ -422,15 +399,6 @@ export default {
         row: this.row
       });
     },
-    /** 开窗选择 */
-    check() {
-      let { row, column, $index } = this.scope;
-      this.$refs.openDialog.open(row, column, this.value, $index);
-    },
-    /** 开窗选择之后重设行数据 */
-    changeRow(row, index) {
-      this.$emit('change-row', row, index);
-    }
   }
 };
 </script>

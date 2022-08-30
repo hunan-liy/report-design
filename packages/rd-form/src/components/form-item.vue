@@ -391,10 +391,9 @@ export default {
     },
 
     getSelectDialogLabel() {
-      console.log(111);
       let label = '';
-      let value = this.forms_[this.prop];
-      if (typeof value === 'object') {
+      let value = this.forms[this.prop];
+      if (value && typeof value === 'object') {
         label = value.label;
       } else {
         label = value;
@@ -424,17 +423,6 @@ export default {
       this.$refs.openDialog.open(this.forms_, this.forms_[this.prop]);
     },
 
-    openDialogChange(values) {
-      let data = this.forms_;
-      Object.keys(values).forEach((prop) => {
-        if (data[prop] !== values[prop]) {
-          this.$emit('change', {
-            prop: prop,
-            value: values[prop]
-          });
-        }
-      });
-    },
 
     getRecursionLabel(values, list, label) {
       let value = values[0];

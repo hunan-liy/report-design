@@ -159,11 +159,8 @@
                           :scope="scope"
                           :column="col"
                           :dropList="dropList"
-                          :dialogs="dialogs"
-                          :hooks="hooks"
                           @change="rowDataChange"
                           @click="rowItemClick"
-                          @change-row="changeRow"
                         />
                       </template>
                     </template>
@@ -186,11 +183,8 @@
                     :scope="scope"
                     :column="tableColumns_[index]"
                     :dropList="dropList"
-                    :dialogs="dialogs"
-                    :hooks="hooks"
                     @change="rowDataChange"
                     @click="rowItemClick"
-                    @change-row="changeRow"
                   />
                 </template>
               </template>
@@ -429,12 +423,6 @@ export default {
       }
       return cols;
     },
-    dialogs() {
-      return this.table_.dialogs || null;
-    },
-    hooks() {
-      return this.table_.hooks || null;
-    }
   },
   methods: {
     /**
@@ -741,31 +729,31 @@ export default {
       this.$emit('row-change', params);
     },
 
-    /** 开窗选择之后重设行数据 */
-    changeRow(row, index) {
-      let data = this.tableData_[index];
-      Object.keys(row).forEach((prop) => {
-        if (data[prop] !== row[prop]) {
-          // if (Object.prototype.hasOwnProperty.calll(data, prop)) {
-          if (Object.hasOwn(data, prop)) {
-            try {
-              this.tableData_[index][prop] = row[prop];
-            } catch (error) {
-              console.log(error);
-            }
-          } else {
-            this.$set(this.tableData_[index], prop, row[prop]);
-          }
+    // /** 开窗选择之后重设行数据 */
+    // changeRow(row, index) {
+    //   let data = this.tableData_[index];
+    //   Object.keys(row).forEach((prop) => {
+    //     if (data[prop] !== row[prop]) {
+    //       // if (Object.prototype.hasOwnProperty.calll(data, prop)) {
+    //       if (Object.hasOwn(data, prop)) {
+    //         try {
+    //           this.tableData_[index][prop] = row[prop];
+    //         } catch (error) {
+    //           console.log(error);
+    //         }
+    //       } else {
+    //         this.$set(this.tableData_[index], prop, row[prop]);
+    //       }
 
-          let params = {
-            prop,
-            index,
-            value: row[prop]
-          };
-          this.$emit('row-change', params);
-        }
-      });
-    },
+    //       let params = {
+    //         prop,
+    //         index,
+    //         value: row[prop]
+    //       };
+    //       this.$emit('row-change', params);
+    //     }
+    //   });
+    // },
 
     /** 行内元素点击事件 */
     rowItemClick(params) {

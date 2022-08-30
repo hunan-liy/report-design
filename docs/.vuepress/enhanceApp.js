@@ -1,5 +1,6 @@
 import Element from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
+import './styles/style.scss'
 
 let ReportDesign = null;
 export default ({
