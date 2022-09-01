@@ -10,7 +10,7 @@
         :headers="headers_"
         :tableColumns="tableColumns"
         :tableData="tableData_"
-        @click="tableClick"
+        @header-click="tableClick"
         @row-item-click="rowItemClick"
         @row-change="rowChange"
         @selection-change="selectionChange"
@@ -358,7 +358,7 @@ export default {
 
     /** 表格点击事件 */
     tableClick(params) {
-      this.$emit('table-click', params);
+      this.$emit('header-click', params);
     },
     /** 表格行点击事件 */
     rowItemClick(params) {

@@ -113,40 +113,4 @@ v-deep .el-dialog {
     border-bottom: solid 1px #ebeef5;
   }
 }
-
-// .el-table__header,
-// .el-table__body {
-//     margin: 0;
-// }
-
-// .el-table table {
-//     display: table;
-// }
-
-// .el-table table tr {
-//     background-color: #fff;
-// }
-
-// .el-table th,td {
-//     border: none;
-// }
-
-// .el-picker-panel table {
-//     margin: 0;
-//     display: table;
-//     border-spacing: 0;
-// }
-
-// .el-picker-panel table tr {
-//     border: 0;
-//     background-color: #fff;
-// }
-
-// .el-picker-panel table th,td {
-//     border: 0;
-// }
-
-// .el-picker-panel .el-date-table th {
-//     border-bottom: solid 1px #ebeef5;
-// }
 </style>

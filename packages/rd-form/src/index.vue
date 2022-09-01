@@ -119,7 +119,8 @@ export default {
       config_: {},
       formList: [],
       forms: {},
-      formsIsChange: false
+      formsIsChange: false,
+      propGroupMap: {}
     };
   },
   computed: {
@@ -199,7 +200,7 @@ export default {
             placeholder = `请选择${label}`;
           }
         }
-        
+
         // 内置处理valueFormat 待优化！！
         let valueFormat;
         if (!props || (props && !props.valueFormat)) {
@@ -244,24 +245,41 @@ export default {
           rules = null;
         }
 
-        // 补全字段和兼容时间控件的范围选择值
-        propGroup = propGroup.length > 0 ? propGroup : [prop];
-        propGroup.forEach((_prop) => {
-          if (this.forms[_prop] === undefined) {
-            let value = this.value[_prop];
-            /**
-             * checkbox-group/transfer 比较特殊，如果初始没有值的话checkbox-group/transfer是显示不出来的
-             * 而且对于checkbox-group/transfer的rules会在每次noticDataChange直接触发，猜测是因为checkbox-group/transfer的rules的检测是根据指针指向变化来检测的而数据每次都是深拷贝的，这个地方属于bug，待优化
-             */
-            if (type === 'checkbox' || type === 'transfer') {
-              value = value === undefined ? [] : value;
-            } else {
-              value = value === undefined ? null : value;
-            }
-            this.$set(this.forms, _prop, value);
-            this.formsIsChange = true;
+        if (this.forms[prop] === undefined) {
+          let value = this.value[prop];
+          /**
+           * checkbox-group/transfer 比较特殊，如果初始没有值的话checkbox-group/transfer是显示不出来的
+           * 而且对于checkbox-group/transfer的rules会在每次noticDataChange直接触发，猜测是因为checkbox-group/transfer的rules的检测是根据指针指向变化来检测的而数据每次都是深拷贝的，这个地方属于bug，待优化
+           */
+          if (type === 'checkbox' || type === 'transfer') {
+            value = value === [];
+          } else {
+            value = value === null;
           }
-        });
+          this.$set(this.forms, prop, value);
+          this.formsIsChange = true;
+        }
+
+        // 补全字段和兼容时间控件的范围选择值
+        if (propGroup && propGroup.length) {
+          this.propGroupMap[prop] = propGroup;
+          propGroup.forEach((_prop) => {
+            if (this.forms[_prop] === undefined) {
+              let value = this.value[_prop];
+              /**
+               * checkbox-group/transfer 比较特殊，如果初始没有值的话checkbox-group/transfer是显示不出来的
+               * 而且对于checkbox-group/transfer的rules会在每次noticDataChange直接触发，猜测是因为checkbox-group/transfer的rules的检测是根据指针指向变化来检测的而数据每次都是深拷贝的，这个地方属于bug，待优化
+               */
+              if (type === 'checkbox' || type === 'transfer') {
+                value = [];
+              } else {
+                value = value === null;
+              }
+              this.$set(this.forms, _prop, value);
+              this.formsIsChange = true;
+            }
+          });
+        }
 
         return {
           slotName,
@@ -300,6 +318,8 @@ export default {
       if (this.formsIsChange) {
         this.formsIsChange = false;
         this.noticDataChange();
+        // 抛出初始化完成事件
+        this.$emit('initValue', this.getFormData());
       }
       // console.log('---------initForms', this.forms);
     },
@@ -349,6 +369,17 @@ export default {
         });
       } else {
         this.$refs.dataForm && this.$refs.dataForm.resetFields();
+        Object.keys(this.propGroupMap).forEach((ele) => {
+          let propGroup = this.propGroupMap[ele];
+          propGroup.forEach((e, i) => {
+            if (this.forms[ele] && this.forms[ele].length > 0) {
+              this.forms[e] =
+                this.forms[ele][i] !== undefined ? this.forms[ele][i] : null;
+            } else {
+              this.forms[e] = null;
+            }
+          });
+        });
       }
 
       this.noticDataChange();
@@ -414,15 +445,6 @@ export default {
         } else {
           return this.dropList[prop];
         }
-        // if (Array.isArray(this.dropList[this.prop])) {
-        //   return this.dropList[this.prop];
-        // } else {
-        //   return this.dropList[this.prop](
-        //     this.prop,
-        //     this.forms_,
-        //     this.formItem
-        //   );
-        // }
       }
       return [];
     },

@@ -1,15 +1,7 @@
 <template>
   <!-- Text 文本类型 -->
-  <div
-    v-if="type === 'text'"
-    class="rd-table-column"
-    :style="{ '--ellipsis': column.ellipsis }"
-  >
-    <el-tooltip
-      v-if="column.renderType === 'tooltip'"
-      :content="formatValue"
-      placement="top"
-    >
+  <div v-if="type === 'text'" class="rd-table-column" :style="getTextStyle">
+    <el-tooltip v-if="column.ellipsis" :content="formatValue" placement="top">
       <div class="rd-ellipsis" @click="click">{{ formatValue }}</div>
     </el-tooltip>
     <span v-else @click="click">{{ formatValue }}</span>
@@ -284,6 +276,17 @@ export default {
       operations = cloneDeep(this.value || operations || []);
       return this.formatter(operations);
     },
+    /** 获取文本列style */
+    getTextStyle() {
+      let { ellipsis } = this.column;
+      if (ellipsis) {
+        return {
+          '--ellipsis': ellipsis
+        };
+      } else {
+        return {};
+      }
+    },
     /** 获取image样式 */
     getImgStyle() {
       let { width = '80px', height } = this.props;
@@ -398,7 +401,7 @@ export default {
         clickItem: params,
         row: this.row
       });
-    },
+    }
   }
 };
 </script>

@@ -32,14 +32,16 @@
                 <el-dropdown-item
                   v-for="(item, index) in visibleColumns_"
                   :key="index"
-                  ><el-checkbox
-                    v-model="item.visible"
-                    :label="item.prop"
-                    class="checkbox"
-                    @change="visibleChange"
-                    >{{ item.label }}</el-checkbox
-                  ></el-dropdown-item
                 >
+                  <div class="visibleCols-item">
+                    <el-checkbox
+                      v-model="item.visible"
+                      class="checkbox"
+                      @change="visibleChange"
+                    ></el-checkbox>
+                    <span class="ellipsis">{{ item.label }}</span>
+                  </div>
+                </el-dropdown-item>
               </el-dropdown-menu>
             </template>
           </el-dropdown>
@@ -69,27 +71,34 @@
           :fixed="hasFixed"
           :selectable="table_.selectable"
         />
-        <!-- 展开行 -->
-        <!-- <el-table-column
-          v-if="hasChildren"
-          width="15"
-          class-name="hasChildren"
-          :fixed="hasFixed"
-        >
-        </el-table-column> -->
         <template v-if="refreshFlag">
           <template v-for="(column, index) in tableColumns_">
             <!-- 没有类型时直接用原本的列 主要是未了使用element的table自带的tree功能 -->
             <el-table-column
-              v-if="column.type === 'origin'"
+              v-if="!column.type"
               :key="index"
               v-bind="column"
               :type="undefined"
             >
+              <!-- 按正常逻辑这里应该是判断headerSlotName存不存在来确定使不使用header插槽，但是这里不知道为什么按正常写法不生效，所以直接就强制使用了header插槽，有待研究 -->
+              <template slot="header" slot-scope="scope">
+                <column-header
+                  :column="column"
+                  :index="index"
+                  :scope="scope"
+                  @filter="columnFilter"
+                >
+                  <slot
+                    v-if="column.headerSlotName"
+                    :name="column.headerSlotName"
+                    v-bind="scope"
+                  />
+                </column-header>
+              </template>
               <template v-if="column.children && column.children.length > 0">
                 <template v-for="(col, i) in column.children">
                   <el-table-column
-                    v-if="col.type === 'origin'"
+                    v-if="!col.type"
                     :key="i"
                     v-bind="col"
                     :type="undefined"
@@ -321,19 +330,6 @@ export default {
       let { multipleTable = false } = this.table_;
       return multipleTable;
     },
-    /** 是否开启了折叠/展开行功能 */
-    // hasChildren() {
-    //   let flag = false;
-    //   if (this.table_['row-key'] || this.table_['rowKey']) {
-    //     this.tableData_.forEach((ele) => {
-    //       let { children = [], hasChildren } = ele;
-    //       if (children.length > 0 || hasChildren) {
-    //         flag = true;
-    //       }
-    //     });
-    //   }
-    //   return flag;
-    // },
     /** 需要控制是否展示的列 暂时与复杂表头不兼容 */
     visibleColumns() {
       let cols = [];
@@ -422,7 +418,7 @@ export default {
         this.updateRefreshFlag();
       }
       return cols;
-    },
+    }
   },
   methods: {
     /**
@@ -473,19 +469,19 @@ export default {
     /** 解析并转义部分属性 */
     setEle(ele) {
       let {
-        type = 'text',
+        type,
         align = 'center',
         width,
         props,
         prop,
         slotName,
-        ellipsis = 1,
+        ellipsis,
         formatter,
         children
       } = ele;
 
       if (type === 'operation') {
-        width = 100;
+        width = 120;
       }
 
       if (!slotName) {
@@ -663,7 +659,7 @@ export default {
         clickItem: item,
         selections: this.selections
       };
-      this.$emit('click', params);
+      this.$emit('header-click', params);
     },
 
     /** 当选择项发生变化时会触发该事件 */
@@ -989,7 +985,22 @@ export default {
 }
 
 .visibleCols-list {
+  max-width: 200px;
   max-height: 500px;
-  overflow: auto;
+  overflow: hidden;
+  overflow-y: auto;
+
+  .visibleCols-item {
+    display: flex;
+
+    .ellipsis {
+      margin-left: 10px;
+      color: #409eff;
+      display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
 }
 </style>

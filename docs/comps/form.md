@@ -784,6 +784,22 @@ export default {
 | value      | 双向绑定的表单值，不传的话会根据formConfig自动补全                                              | object | —      | {}     |
 | dropList   | 表单中下拉项的数据与formConfig配合使用，对应的prop的值可以array/function(prop, value, formItem) | object | —      | {}     |
 
+### Events
+| 事件名称 | 说明                     | 回调参数             |
+| -------- | ------------------------ | -------------------- |
+| submit   | form表单提交事件         | 表单的value          |
+| change   | form表单元素值change事件 | params               |
+| reset    | form表单重置事件         | —                    |
+| input    | form表单值，双向绑定用   | 表单的value          |
+| validate | 表单校验时触发           | type, res, errorText |
+
+### Events params参数
+#### change form表单元素值change事件
+- prop 触发change的元素的prop
+- value 当前元素change后的值
+- rows 当前选中的行，只有selectDialog才有
+
+
 ### Form Methods
 | 方法名        | 说明                                                                                                                                                                 | 参数                                          |
 | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
@@ -798,27 +814,22 @@ export default {
 | -------------------- | ---------------------------------------------------------- |
 | formConfig的slotName | 自定义表单元素的内容，参数为 { value, formItem, dropList } |
 
-### Events
-| 事件名称 | 说明                     | 回调参数                                                                                                        |
-| -------- | ------------------------ | --------------------------------------------------------------------------------------------------------------- |
-| submit   | form表单提交事件         | 表单的value                                                                                                     |
-| change   | form表单元素值change事件 | { prop: '触发change的元素的prop', value: '当前元素change后的值', rows: ['当前选中的行，只有selectDialog才有'] } |
-| reset    | form表单重置事件         | —                                                                                                               |
-| input    | form表单值，双向绑定用   | 表单的value                                                                                                     |
-| validate | 表单校验时触发           | type, res, errorText                                                                                            |
+
+
 
 ### Config
-| 参数                    | 说明                                                                                        | 类型    | 可选值                | 默认值 |
-| ----------------------- | ------------------------------------------------------------------------------------------- | ------- | --------------------- | ------ |
-| label-width             | 表单域标签的宽度，例如 '50px'。作为 Form 直接子元素的 form-item 会继承该值。支持 auto。     | string  | —                     | 110px  |
-| hide-required-asterisk  | 是否隐藏必填字段的标签旁边的红色星号                                                        | boolean | —                     | false  |
-| show-message            | 是否显示校验错误信息                                                                        | boolean | —                     | true   |
-| validate-on-rule-change | 是否在 rules 属性改变后立即触发一次验证                                                     | boolean | —                     | true   |
-| col                     | 表单元素大小，通过24分栏去控制每个元素的大小和位置                                          | number  | —                     | —      |
-| size                    | 用于控制该表单内组件的尺寸                                                                  | string  | medium / small / mini | small  |
-| disabled                | 是否禁用该表单内的所有组件。若设置为 true，则表单内组件上的 disabled 属性不再生效           | boolean | —                     | false  |
-| readonly                | 是否开启只读模式。若设置为 true，大部分表单元素变为text，部分变为disabled，Transfer还未生效 | boolean | —                     | false  |
-| isCheckForm             | 是否开启表单验证                                                                            | boolean | —                     | true   |
+| 参数                    | 说明                                                                                                                                                  | 类型    | 可选值                | 默认值 |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ------- | --------------------- | ------ |
+| label-width             | 表单域标签的宽度，例如 '50px'。作为 Form 直接子元素的 form-item 会继承该值。支持 auto。                                                               | string  | —                     | 110px  |
+| hide-required-asterisk  | 是否隐藏必填字段的标签旁边的红色星号                                                                                                                  | boolean | —                     | false  |
+| show-message            | 是否显示校验错误信息                                                                                                                                  | boolean | —                     | true   |
+| validate-on-rule-change | 是否在 rules 属性改变后立即触发一次验证                                                                                                               | boolean | —                     | true   |
+| col                     | 表单元素大小，通过24分栏去控制每个元素的大小和位置                                                                                                    | number  | —                     | —      |
+| size                    | 用于控制该表单内组件的尺寸                                                                                                                            | string  | medium / small / mini | small  |
+| disabled                | 是否禁用该表单内的所有组件。若设置为 true，则表单内组件上的 disabled 属性不再生效                                                                     | boolean | —                     | false  |
+| readonly                | 是否开启只读模式。若设置为 true，大部分表单元素变为text，部分变为disabled，Transfer还未生效                                                           | boolean | —                     | false  |
+| isCheckForm             | 是否开启表单验证                                                                                                                                      | boolean | —                     | true   |
+| resetToNull             | 重置时是否将所有值重置成null，因为form自带的重置功能会将值重置成第一次赋值的值，如果设置为true，则重置成null，如果设置为false，使用form自带的重置功能 | boolean | —                     | true   |
 
 
 ### FormConfig
@@ -829,7 +840,7 @@ export default {
 | label        | 表单元素的label                                                                                                   | string                                  | —                                                                                                                                                                           | —      |
 | label-width  | 表单域标签的的宽度，例如 '50px'。支持 auto。                                                                      | string                                  | —                                                                                                                                                                           | —      |
 | col          | 表单元素大小，通过24分栏去控制每个元素的大小和位置                                                                | number                                  | —                                                                                                                                                                           | 12     |
-| width        | 与col功能一样，但是不能同时使用，可以是px(50px)也可以是百分比（50%）                                              | string                                  | —                                                                                                                                                                           | —      |
+| width        | 与col功能一样，优先级高于col，但是不能同时使用，可以是px(50px)也可以是百分比（50%）                               | string                                  | —                                                                                                                                                                           | —      |
 | slotName     | 当type为slot时，使用插槽的名称，默认取FormConfig的prop                                                            | string                                  | —                                                                                                                                                                           | —      |
 | slotType     | 当type为slot时，是否将form-item作为整个插槽，item代表整个作为插槽                                                 | string                                  | —/item                                                                                                                                                                      | —      |
 | propGroup    | 当一个表单元素需要赋值多个prop时使用                                                                              | array                                   | —                                                                                                                                                                           | —      |

@@ -25,7 +25,10 @@ export default {
     return {
       table: {
         multipleTable: true,
-        visibleCols: true
+        visibleCols: true,
+        // maxHeight: 300,
+        highlightCurrentRow: true
+        // size: 'mini'
       },
       headers: {
         add: {

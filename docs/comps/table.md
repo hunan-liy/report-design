@@ -42,7 +42,7 @@ export default {
       },
       tableColumns: [
         {
-          label: '月份',
+          label: '月月份月月份月份份月份份',
           prop: 'month',
           minWidth: 100,
           sortable: true,
@@ -62,8 +62,8 @@ export default {
           label: '姓名',
           prop: 'name',
           headerSlotName: 'header1',
-          renderType: 'tooltip',
-          ellipsis: 2,
+          // renderType: 'tooltip',
+          // ellipsis: 2,
           minWidth: 100,
           sortable: true
         },
@@ -745,20 +745,15 @@ export default {
 | tableData    | 表格数据                                                                   | array                                          | —      | []     |
 | dropList     | 表格行中下拉项的数据与tableColumns配合使用，可以使用function来处理返回结果 | object/Function(row, column, cellValue, index) | —      | {}     |
 
-### Slot
-| name                   | 说明           |
-| ---------------------- | -------------- |
-| tableColumns的slotName | 表格的内容     |
-| headers的slotName      | 表格头部的内容 |
 
 ### Events
 | 事件名称         | 说明                                                                                                                     | 回调参数                        |
 | ---------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------- |
-| click            | 表格头部按钮点击事件                                                                                                     | —                               |
-| selection-change | 当选择项发生变化时会触发该事件                                                                                           | —                               |
-| sort-change      | 当表格的排序条件发生变化的时候会触发该事件                                                                               | —                               |
-| row-change       | 行数据change事件                                                                                                         | —                               |
-| row-item-click   | 行内元素点击事件，只支持部分type                                                                                         | —                               |
+| header-click     | 表格头部按钮点击事件                                                                                                     | params                          |
+| selection-change | 当选择项发生变化时会触发该事件                                                                                           | selection                       |
+| sort-change      | 当表格的排序条件发生变化的时候会触发该事件                                                                               | { column, prop, order }         |
+| row-change       | 行数据change事件                                                                                                         | params                          |
+| row-item-click   | 行内元素点击事件，只支持部分type                                                                                         | params                          |
 | cell-click       | 当某个单元格被点击时会触发该事件                                                                                         | row, column, cell, event        |
 | cell-dblclick    | 当某个单元格被双击击时会触发该事件                                                                                       | row, column, cell, event        |
 | row-click        | 当某一行被点击时会触发该事件                                                                                             | row, column, event              |
@@ -766,17 +761,86 @@ export default {
 | row-dblclick     | 当某一行被双击时会触发该事件                                                                                             | row, column, event              |
 | expand-change    | 当用户对某一行展开或者关闭的时候会触发该事件（展开行时，回调的第二个参数为 expandedRows；树形表格时第二参数为 expanded） | row, (expandedRows \| expanded) |
 
+### Events params参数
+#### header-click 表格头部按钮点击事件
+- type 当前点击元素的类型
+- selections 当前选中的行（selection开启才能选择行）
+- clickItem 当前点击的对象
+  - label 点击的按钮的label
+  - prop 点击的按钮的prop
+
+#### row-change 表格头部按钮点击事件
+- prop 点击的列的prop
+- value 点击元素的值
+- index 点击的元素所对应的行下标
+- row 点击元素所对应的行数据
+- rows 列的type为selectDailog时才会有，表示selectDialog弹窗确定是弹窗中选中的行数据
+
+#### row-item-click 行内元素点击事件，只支持部分type
+- type 当前点击元素的类型
+- prop 点击的列的prop
+- index 点击的元素所对应的行下标
+- row 点击元素所对应的行数据
+- value 点击元素的值
+- rows 列的type为selectDailog时才会有，表示selectDialog弹窗确定是弹窗中选中的行数据
+- clickItem 当前点击的对象
+  - label 点击的按钮的label
+  - prop 点击的按钮的prop
+
+### Form Methods
+| 方法名             | 说明                                                | 参数            |
+| ------------------ | --------------------------------------------------- | --------------- |
+| doLayout           | 对 Table 进行重新布局                               | -               |
+| toggleRowSelection | 重写了table的toggleRowSelection，第一个参数为行下标 | index, selected |
+| clearSelection     | 用于多选表格，清空用户的选择                        | -               |
+
+
+### Slot
+| name                   | 说明                                                                                  |
+| ---------------------- | ------------------------------------------------------------------------------------- |
+| tableColumns的slotName | 表格的内容，头部插槽参数为 { column, $index }，内容插槽参数为 { row, column, $index } |
+| headers的slotName      | 表格头部的内容，参数为 { ...header的属性, selections }                                |
 
 ### Table
-| 参数          | 说明                                                                         | 类型                 | 可选值           | 默认值 |
-| ------------- | ---------------------------------------------------------------------------- | -------------------- | ---------------- | ------ |
-| ...           | Table 表格的所有Attributes属性（未完全测试，如果某个属性不能使用，需要处理） | object               | —                | {}     |
+部分原有属性未验证其是否能完全正常使用，请见谅
+| 参数                  | 说明                   | 类型          | 可选值                | 默认值 |
+| --------------------- | ---------------------- | ------------- | --------------------- | ------ |
+| height                | Table 的高度           | string/number | —                     | —      |
+| max-height            | Table 的最大高度       | string/number | —                     | —      |
+| stripe                | 是否为斑马纹 table     | boolean       | —                     | false  |
+| border                | 是否带有纵向边框       | boolean       | —                     | true   |
+| size                  | Table 的尺寸           | string        | medium / small / mini | —      |
+| fit                   | 列的宽度是否自撑开     | boolean       | —                     | true   |
+| show-header           | 是否显示表头           | boolean       | —                     | true   |
+| highlight-current-row | 是否要高亮当前行       | boolean       | —                     | false  |
+| current-row-key       | 当前行的 key，只写属性 | string/number | —                     | —      |
+| row-class-name                | 行的 className 的回调方法，也可以使用字符串为所有行设置一个固定的 className           | Function({row, rowIndex})/String | —                     | —      |
+| row-style                | 行的 style 的回调方法，也可以使用一个固定的 Object 为所有行设置一样的 Style           | Function({row, rowIndex})/Object | —                     | —      |
+| cell-class-name                   | 单元格的 className 的回调方法，也可以使用字符串为所有单元格设置一个固定的 className     | Function({row, column, rowIndex, columnIndex})/String       | —                     | —   |
+| cell-style           | 单元格的 style 的回调方法，也可以使用一个固定的 Object 为所有单元格设置一样的 Style。           | Function({row, column, rowIndex, columnIndex})/Object       | —                     | —   |
+| header-row-class-name | 表头行的 className 的回调方法，也可以使用字符串为所有表头行设置一个固定的 className       | Function({row, rowIndex})/String       | —                     | —  |
+| header-row-style       | 表头行的 style 的回调方法，也可以使用一个固定的 Object 为所有表头行设置一样的 Style | Function({row, rowIndex})/Object | —                     | —      |
+| header-cell-class-name | 表头单元格的 className 的回调方法，也可以使用字符串为所有表头单元格设置一个固定的 className       | Function({row, column, rowIndex, columnIndex})/String       | —                     | —  |
+| header-cell-style | 表头单元格的 style 的回调方法，也可以使用一个固定的 Object 为所有表头单元格设置一样的 Style       | Function({row, column, rowIndex, columnIndex})/Object       | —                     | —  |
+| row-key | 行数据的 Key，用来优化 Table 的渲染；在使用 reserve-selection 功能与显示树形数据时，该属性是必填的。类型为 String 时，支持多层访问：user.info.id，但不支持 user.info[0].id，此种情况请使用 Function       | Function(row)/String       | —                     | —  |
+| empty-text | 空数据时显示的文本内容，也可以通过 slot="empty" 设置       | String       | —                     | 暂无数据  |
+| default-expand-all | 是否默认展开所有行，当 Table 包含展开行存在或者为树形表格时有效       | Boolean       | —                     | false  |
+| expand-row-keys | 可以通过该属性设置 Table 目前的展开行，需要设置 row-key 属性才能使用，该属性为展开行的 keys 数组       | Array       | —                     | —  |
+| default-sort | 默认的排序列的 prop 和顺序。它的prop属性指定默认的排序的列，order指定默认排序的顺序       | Object       | order: ascending, descending                     | 如果只指定了prop, 没有指定order, 则默认顺序是ascending  |
+| tooltip-effect | tooltip effect 属性       | String       | dark/light                     | —  |
+| show-summary | 是否在表尾显示合计行       | boolean       | —                     | false  |
+| sum-text | 合计行第一列的文本       | String       | —                     | 合计  |
+| summary-method | 自定义的合计计算方法       | Function({ columns, data })       | —                     | —  |
+| span-method | 合并行或列的计算方法       | Function({ row, column, rowIndex, columnIndex })       | —                     | —  |
+| select-on-indeterminate | 在多选表格中，当仅有部分行被选中时，点击表头的多选框时的行为。若为 true，则选中所有行；若为 false，则取消选择所有行       | Boolean       | —                     | true  |
+| indent | 展示树形数据时，树节点的缩进       | Number       | —                     | 16  |
+| lazy | 是否懒加载子节点数据       | Boolean       | —                     | —  |
+| load | 加载子节点数据的函数，lazy 为 true 时生效，函数第二个参数包含了节点的层级信息       | Function(row, treeNode, resolve)       | —                     | —  |
+| tree-props | 渲染嵌套数据的配置选项       | Object       | —                     | { hasChildren: 'hasChildren', children: 'children' }  |
 | multipleTable | 是否开启表格行选择（type为selection的列）,radio时为单选                      | boolean/string       | false/true/radio | —      |
 | visibleCols   | 是否开启表格列筛选，为true代表所有列都可以筛选，Array的话只有Array中的列开启 | boolean/array        | —                | —      |
 | readonly      | 设置只读模式，如果列中有可编辑的元素，将自动转化为文本                       | boolean/array        | —                | —      |
 | selectable    | 开启表格行选择后可以通过该属性设置当前行的选择功能是否禁用                   | Function(row, index) | —                | —      |
-| dialogs       | 开窗配置(已废除，请查看hy-select-dialig使用方式)                             | object               | —                | —      |
-| hooks         | 开窗回调(已废除，请查看hy-select-dialig使用方式)                             | object               | —                | —      |
 
 ### Table dialogs 已废除
 | 参数  | 说明                                 | 类型   | 可选值 | 默认值 |

@@ -591,6 +591,7 @@ export default {
 .rd-select-dialog {
   position: relative;
   width: 100%;
+  height: fit-content;
 
   $btnWidth: 60px;
 

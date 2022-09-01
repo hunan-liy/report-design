@@ -111,7 +111,7 @@ export default {
   :headers="headers"
   :tableColumns="tableColumns"
   :httpConfig="httpConfig"
-  @table-click="tableClick"
+  @header-click="tableClick"
   @row-item-click="rowItemClick"
   @row-change="rowChange"
   @selection-change="selectionChange"
@@ -276,18 +276,14 @@ export default {
 
 
 
-### Slot
-| name                   | 说明           |
-| ---------------------- | -------------- |
-| tableColumns的slotName | 表格的内容     |
-| headers的slotName      | 表格头部的内容 |
+
 
 
 ### Events
 | 事件名称         | 说明                                       | 回调参数                 |
 | ---------------- | ------------------------------------------ | ------------------------ |
 | loadData         | 加载数据时触发                             | —                        |
-| table-click      | 表格头部按钮点击事件                       | —                        |
+| header-click     | 表格头部按钮点击事件                       | —                        |
 | selection-change | 当选择项发生变化时会触发该事件             | —                        |
 | sort-change      | 当表格的排序条件发生变化的时候会触发该事件 | —                        |
 | row-change       | 行数据change事件                           | —                        |
@@ -297,6 +293,19 @@ export default {
 | row-click        | 当某一行被点击时会触发该事件               | row, column, event       |
 | row-contextmenu  | 当某一行被鼠标右键点击时会触发该事件       | row, column, event       |
 | row-dblclick     | 当某一行被双击时会触发该事件               | row, column, event       |
+
+### Methods
+| 方法名     | 说明             | 参数 |
+| ---------- | ---------------- | ---- |
+| loadData   | 刷新数据         | —    |
+| initHeight | 刷新页面布局高度 | —    |
+| openSearch | 打开高级搜索弹窗 | —    |
+
+### Slot
+| name                   | 说明           |
+| ---------------------- | -------------- |
+| tableColumns的slotName | 表格的内容     |
+| headers的slotName      | 表格头部的内容 |
 
 ### Headers
 | 参数     | 说明                                                                                    | 类型   | 可选值                | 默认值 |
@@ -317,10 +326,4 @@ export default {
 | dataFormatter  | 请求返回的数据的拦截回调           | Function(data,res) | —        | —      |
 | isPaging       | 数据是否分页显示                   | boolean            | —        | true   |
 
-### Methods
-| 方法名     | 说明             | 参数 |
-| ---------- | ---------------- | ---- |
-| loadData   | 刷新数据         | —    |
-| initHeight | 刷新页面布局高度 | —    |
-| openSearch | 打开高级搜索弹窗 | —    |
 
