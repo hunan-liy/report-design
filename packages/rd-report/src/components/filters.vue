@@ -21,8 +21,8 @@
           @input="formDataChange"
           @submit="submitForm"
         >
-          <template v-for="item in formSlots" v-slot:[item.slotName]="scope">
-            <slot :name="item.slotName_topForm" v-bind="scope"></slot>
+          <template v-for="item in filtersSlots" v-slot:[item.slotName]="scope">
+            <slot :name="item.slotName" v-bind="scope"></slot>
           </template>
           <template v-slot:filters-button>
             <div class="filters-button">
@@ -63,6 +63,8 @@ export default {
   },
   data() {
     return {
+      /** 过滤条件插槽数组 */
+      filtersSlots: [],
       formConfig_: {}, // 存储用作展示的条件
       isShowFoldButton: false, // 是否要显示 展开/收起 按钮
       isFold: true, // 是否折叠状态
@@ -113,6 +115,12 @@ export default {
       }
 
       formConfigArray.map(([prop, ele], index) => {
+        if (ele.type === 'slot') {
+          if (!ele.slotName) {
+            ele.slotName = prop;
+          }
+          this.filtersSlots.push(ele);
+        }
         formConfig_[prop] = {
           ...ele
         };
@@ -139,7 +147,7 @@ export default {
         }
       };
       this.formConfig_ = formConfig_;
-      console.log('this.formConfig_', this.formConfig_);
+      // console.log('this.formConfig_', this.formConfig_);
     },
 
     // initFormConfig(formConfig) {
@@ -224,7 +232,8 @@ export default {
     },
     /** 重置按钮点击事件 */
     resetClick() {
-      this.$refs.rdForm.resetForm();
+      this.$emit('reset');
+      this.$refs.rdForm.resetFields();
       this.summit();
     },
 
@@ -267,12 +276,15 @@ export default {
 
   .fold {
     height: 49px;
+    overflow-y: hidden !important;
   }
 
   .filters-box {
     position: relative;
     padding-right: 90px;
     overflow: hidden;
+    overflow-y: auto;
+    max-height: 300px;
 
     .fold-button {
       position: absolute;

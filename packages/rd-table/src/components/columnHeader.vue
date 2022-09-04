@@ -4,7 +4,7 @@
     :class="{ 'heade-label-sort': column.sortable }"
     @click.stop
   >
-    <template v-if="column.filters && column.filters.length > 0">
+    <!-- <template v-if="column.filters && column.filters.length > 0">
       <el-popover
         placement="bottom"
         trigger="click"
@@ -27,19 +27,19 @@
       </el-popover>
     </template>
 
-    <template v-else>
+    <template v-else> -->
       <slot v-if="column.headerSlotName" v-bind="scope" />
       <template v-else
         ><span>{{ scope.column.label }}</span></template
       >
-    </template>
+    <!-- </template> -->
   </div>
 </template>
 <script>
-import Filters from './filters.vue';
+// import Filters from './filters.vue';
 export default {
   components: {
-    Filters
+    // Filters
   },
   props: {
     /** 列信息 */
@@ -56,9 +56,9 @@ export default {
     }
   },
   methods: {
-    columnFilter(params) {
-      this.$emit('filter', params);
-    }
+    // columnFilter(params) {
+    //   this.$emit('filter', params);
+    // }
   }
 };
 </script>
@@ -69,13 +69,13 @@ export default {
   padding: 5px 10px;
 
   // 自定义过滤数据功能，所以这个地方隐藏自带的功能按钮
-  .el-table__column-filter-trigger {
-    display: none;
-  }
+  // .el-table__column-filter-trigger {
+  //   display: none;
+  // }
 
-  .el-popover__reference {
-    cursor: pointer;
-  }
+  // .el-popover__reference {
+  //   cursor: pointer;
+  // }
 }
 
 .heade-label-sort {

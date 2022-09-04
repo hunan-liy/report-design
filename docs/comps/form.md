@@ -779,19 +779,20 @@ export default {
 ### Attributes
 | 参数       | 说明                                                                                            | 类型   | 可选值 | 默认值 |
 | ---------- | ----------------------------------------------------------------------------------------------- | ------ | ------ | ------ |
-| config     | form表单组件整体配置                                                                            | object | —      | {}     |
+| config     | 表单组件整体配置                                                                                | object | —      | {}     |
 | formConfig | 表单元素配置项                                                                                  | object | —      | {}     |
 | value      | 双向绑定的表单值，不传的话会根据formConfig自动补全                                              | object | —      | {}     |
 | dropList   | 表单中下拉项的数据与formConfig配合使用，对应的prop的值可以array/function(prop, value, formItem) | object | —      | {}     |
 
 ### Events
-| 事件名称 | 说明                     | 回调参数             |
-| -------- | ------------------------ | -------------------- |
-| submit   | form表单提交事件         | 表单的value          |
-| change   | form表单元素值change事件 | params               |
-| reset    | form表单重置事件         | —                    |
-| input    | form表单值，双向绑定用   | 表单的value          |
-| validate | 表单校验时触发           | type, res, errorText |
+| 事件名称  | 说明                                          | 回调参数             |
+| --------- | --------------------------------------------- | -------------------- |
+| submit    | form表单提交事件                              | 表单的value          |
+| change    | form表单元素值change事件                      | params               |
+| reset     | form表单重置事件                              | —                    |
+| input     | form表单值，双向绑定用                        | 表单的value          |
+| validate  | 表单校验时触发                                | type, res, errorText |
+| initValue | 内部如果根据formConfig组装value完成之后会触发 | 表单的value          |
 
 ### Events params参数
 #### change form表单元素值change事件
@@ -820,7 +821,7 @@ export default {
 ### Config
 | 参数                    | 说明                                                                                                                                                  | 类型    | 可选值                | 默认值 |
 | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ------- | --------------------- | ------ |
-| label-width             | 表单域标签的宽度，例如 '50px'。作为 Form 直接子元素的 form-item 会继承该值。支持 auto。                                                               | string  | —                     | 110px  |
+| label-width             | 表单域标签的宽度，例如 '50px'。作为 Form 直接子元素的 form-item 会继承该值。支持 auto。                                                               | string  | —                     | 100px  |
 | hide-required-asterisk  | 是否隐藏必填字段的标签旁边的红色星号                                                                                                                  | boolean | —                     | false  |
 | show-message            | 是否显示校验错误信息                                                                                                                                  | boolean | —                     | true   |
 | validate-on-rule-change | 是否在 rules 属性改变后立即触发一次验证                                                                                                               | boolean | —                     | true   |
@@ -852,10 +853,11 @@ export default {
 
 ### FormConfig props
 每个表单元素在element-ui中的原生属性（重写了其中部分属性）
-| 参数        | 说明                                                             | 类型                                    | 可选值 | 默认值 |
-| ----------- | ---------------------------------------------------------------- | --------------------------------------- | ------ | ------ |
-| ...         | 每个表单元素在element-ui中的原生属性                             | —                                       | —      | —      |
-| placeholder | 占位文本，输入框默认`请输入${label}`，选择框默认`请选择${label}` | string                                  | —      | —      |
-| valueFormat | datePicker默认yyyy-MM-dd，timePicker默认HH:mm:ss                 | string                                  | —      | —      |
-| disabled    | 是否禁用                                                         | boolean/function(prop, value, formItem) | —      | —      |
-| clearable   | 是否可清空                                                       | boolean                                 | —      | true   |
+| 参数        | 说明                                                                                        | 类型                                    | 可选值 | 默认值 |
+| ----------- | ------------------------------------------------------------------------------------------- | --------------------------------------- | ------ | ------ |
+| ...         | 每个表单元素在element-ui中的原生属性                                                        | —                                       | —      | —      |
+| placeholder | 占位文本，输入框默认`请输入${label}`，选择框默认`请选择${label}`                            | string                                  | —      | —      |
+| valueFormat | datePicker默认yyyy-MM-dd，timePicker默认HH:mm:ss                                            | string                                  | —      | —      |
+| disabled    | 是否禁用                                                                                    | boolean/function(prop, value, formItem) | —      | —      |
+| clearable   | 是否可清空                                                                                  | boolean                                 | —      | true   |
+| readonly    | 是否开启只读模式。若设置为 true，大部分表单元素变为text，部分变为disabled，Transfer还未生效 | boolean                                 | —      | false  |

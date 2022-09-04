@@ -28,9 +28,19 @@ const install = function (Vue) {
   });
 };
 
+// 初始化设置全局配置 (待完善)
+const init = function (obj) {
+  let $ReportDesign = window.$ReportDesign ? window.$ReportDesign : {};
+  window.$ReportDesign = {
+    ...$ReportDesign,
+    ...obj
+  };
+};
+
 export default {
   // 导出的对象必须具有 install，才能被 Vue.use() 方法安装
   install,
+  init,
   // 以下是具体的组件列表
   ...components
 };

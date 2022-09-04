@@ -1,62 +1,82 @@
 <template>
   <div class="page">
     <rd-report
-      ref="hyReport"
+      ref="rdReport"
       :filters="filters"
       :headers="headers"
       :tableColumns="tableColumns"
       :httpConfig="httpConfig"
-    ></rd-report>
+      @header-click="headerClick"
+      @row-item-click="rowItemClick"
+    >
+      <div slot="filter_userName">
+        <el-input v-model="filters.value.userName" placeholder="请输入姓名" @change="filterUserNameChange"></el-input>
+      </div>
+      <span slot="headerSlot">
+        头部插槽
+      </span>
+      <div slot="userName" slot-scope="scope">
+        插槽+{{scope.value}}
+      </div>
+    </rd-report>
   </div>
 </template>
 <script>
 export default {
   data() {
     return {
-      authorization: '',
       filters: {
+        config: {
+          col: 12
+        },
         formConfig: {
-          typeCode: {
-            type: 'input',
-            label: '分类编码'
+          userName: {
+            type: 'slot',
+            slotName: 'filter_userName',
+            label: '姓名'
           },
-          typeName: {
+          age: {
             type: 'select',
-            label: '分类名称'
+            label: '年龄'
           },
-          typeCode1: {
+          sex: {
             type: 'input',
-            label: '分类编码'
+            label: '性别'
           },
-          typeName1: {
+          birthday: {
             type: 'select',
-            label: '分类名称'
+            label: '生日'
           },
-          typeCode2: {
+          email: {
             type: 'input',
-            label: '分类编码'
+            label: '邮箱'
           },
-          typeName2: {
+          address: {
             type: 'select',
-            label: '分类名称'
+            label: '地址'
           }
+        },
+        value: {
+          userName: '张三'
         },
         dropList: {
           typeName: []
         }
       },
-      /** 报表头部的按钮 TOCUS 这部分的数据需要根据实际需要哪些按钮去配置 */
       headers: {
-        // 刷新按钮
-        refresh: {
-          label: '刷新'
+        add: {
+          label: '新增'
+        },
+        headerSlot: {
+          type: 'slot',
+          label: '插槽'
         }
       },
       tableColumns: [
         {
+          type: 'slot',
           label: '姓名',
-          prop: 'userName',
-          filters: true
+          prop: 'userName'
         },
         {
           label: '年龄',
@@ -64,7 +84,15 @@ export default {
         },
         {
           label: '性别',
-          prop: 'sex'
+          prop: 'sex',
+          formatter: (row) => {
+            let { sex } = row;
+            if (sex === 1) {
+              return '男';
+            } else {
+              return '女';
+            }
+          }
         },
         {
           label: '生日',
@@ -77,16 +105,53 @@ export default {
         {
           label: '地址',
           prop: 'address'
+        },
+        {
+          type: 'operation',
+          label: '操作',
+          prop: 'operation',
+          operations: [
+            {
+              prop: 'edit',
+              label: '修改'
+            },
+            {
+              prop: 'delete',
+              label: '删除'
+            }
+          ]
         }
       ],
       httpConfig: {
-        url: 'https://www.fastmock.site/mock/de66cd0ff6569e78bb9857a0e42035f9/report-design/getReportData'
+        url: 'https://www.fastmock.site/mock/de66cd0ff6569e78bb9857a0e42035f9/report-design/getReportData',
+        isPaging: false
       }
     };
   },
   mounted() {},
   methods: {
-    init() {}
+    /** 插槽中使用的input的change事件 */
+    filterUserNameChange(value){
+      this.filters.value.userName = value;
+    },
+    headerClick(params) {
+      console.log(params);
+      let { clickItem } = params;
+      let { prop } = clickItem || {};
+      if (prop === 'add') {
+        console.log('你点击了新增按钮');
+      }
+    },
+    rowItemClick(params) {
+      console.log(params);
+      let { clickItem } = params;
+      let { prop } = clickItem || {};
+      if (prop === 'edit') {
+        console.log('你点击了修改按钮');
+      } else if (prop === 'delete') {
+        console.log('你点击了删除按钮');
+      }
+    }
   }
 };
 </script>

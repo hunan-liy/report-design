@@ -21,14 +21,33 @@ export default ({
         // ElComponent = require('@lib/jUI.umd.min').default;
         // import('@lib/jUI.css');
       }
-
-      // ReportDesign.init({
-      //   upload: 'https://obs-dev-test-public.obs.cn-east-2.myhuaweicloud.com',
-      //   upLoadKey: 'http://10.88.130.98/server/third/obs/getSign/obs-dev-test-public',
-      //   directory: 'images/custom_refashion/',
-      //   uploadSelf: 'http://10.88.130.98/server/third/fastDFS/doUpload',
-      //   serverSelf: 'http://10.88.130.64/',
-      // });
+      
+      ReportDesign.init({
+        interceptRequest: (data) => {
+          let { filters, page, orderParams } = data;
+          let { currentPage, pageSize, isPaging } = page;
+          let { order, prop } = orderParams;
+          let params = {  
+            ...filters,
+            page: {
+              pageNum: currentPage,
+              pageSize: pageSize,
+              sort: order,
+              orderBy: prop,
+              isPaging: isPaging
+            }
+          };
+          return params;
+        },
+        interceptResponse: (res) => {
+          let { total, list } = res.data || {};
+          let data = {
+            tableData: list,
+            total: total
+          };
+          return data;
+        }
+      });
       Vue.use(ReportDesign);
     },
   });

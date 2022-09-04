@@ -1,7 +1,17 @@
 <template>
   <div ref="rdReport" class="rd-report">
     <div ref="filter" class="rd-report-header">
-      <filters :filters="filters" @flodClick="flodClick" @merge="mergeSearchParams" @submit="searchSubmit"></filters>
+      <filters
+        :filters="filters"
+        @flodClick="flodClick"
+        @merge="mergeSearchParams"
+        @submit="searchSubmit"
+        @reset="resetFields"
+      >
+        <template v-for="item in filtersSlots" v-slot:[item.slotName]="scope">
+          <slot :name="item.slotName" v-bind="scope"></slot>
+        </template>
+      </filters>
     </div>
     <div class="rd-report-body">
       <rd-table
@@ -116,20 +126,20 @@ export default {
   data() {
     return {
       headers_: {},
+      /** 过滤条件插槽数组 */
+      filtersSlots: [],
       /** 表格插槽数组 */
       tableHeaderSlots: [],
       tableSlots: [],
-      /** 认证信息 */
-      authorization: '',
       table_: {},
       tableData_: [],
       pagination_: {},
       /** 查询条件参数 */
       searchParams: {},
       /** 排序数据 */
-      sortParams: {
-        sort: null,
-        orderBy: null
+      orderParams: {
+        order: null,
+        prop: null
       },
       /** 是否父组件传值过来的 */
       isParentData: false,
@@ -146,11 +156,23 @@ export default {
     tableSlotArray() {
       let ary = this.tableHeaderSlots.concat(this.tableSlots);
       return ary;
+    },
+    /** 拦截请求 */
+    interceptRequest() {
+      let interceptRequest_g =
+        window.$ReportDesign && window.$ReportDesign.interceptRequest;
+      let { interceptRequest } = this.httpConfig;
+      return interceptRequest || interceptRequest_g || null;
+    },
+    /** 响应拦截 */
+    interceptResponse() {
+      let interceptResponse_g =
+        window.$ReportDesign && window.$ReportDesign.interceptResponse;
+      let { interceptResponse } = this.httpConfig;
+      return interceptResponse || interceptResponse_g || null;
     }
   },
   mounted() {
-    this.authorization = window.HuiymentUI && window.HuiymentUI.authorization;
-
     const { immediate = true } = this.httpConfig;
     // 是否立即执行请求
     if (immediate) {
@@ -177,7 +199,7 @@ export default {
         let height_filters = rdFilter.clientHeight;
         let height_table_header = table_header.clientHeight + 10 + 10; // table组件的头部高度 + 头部padding + 底部margin
         let height_footer = footer.clientHeight + 10; // 底部高度
-        console.log(height, height_filters);
+        // console.log(height, height_filters);
 
         let height_table =
           height - height_filters - height_table_header - height_footer;
@@ -197,63 +219,34 @@ export default {
       this.table_ = cloneDeep(data);
     },
 
+    /** 处理过滤条件配置 */
+    handleFilters(data) {
+      let filters = cloneDeep(data);
+      let { formConfig = {} } = filters;
+
+      Object.entries(formConfig).map(([prop, ele]) => {
+        let { type, slotName } = ele;
+        if (type === 'slot') {
+          if (!slotName) {
+            ele.slotName = prop;
+          }
+          this.filtersSlots.push(ele);
+        }
+      });
+    },
+
     /** 处理头部配置 */
     handleHeaders(data) {
       this.tableHeaderSlots = [];
       let headers = cloneDeep(data);
       Object.entries(headers).map(([prop, ele]) => {
-        let { type, slotName, props, label } = ele;
-        if (type === 'search') {
-          // 高级搜索
-          ele.type = 'slot';
-          ele.slotName = prop;
-          ele.type_ = type;
-          ele.prop = prop;
-          let size = 'mini';
+        let { type, slotName } = ele;
 
-          let { title, value } = props;
-          if (value) {
-            this.mergeSearchParams(value);
-          }
-          if (!title) {
-            title = label || '高级搜索';
-          }
-
-          ele = {
-            size,
-            ...ele,
-            props: {
-              title,
-              ...props
-            }
-          };
-          this.tableHeaderSlots.push(ele);
-        } else if (type === 'refresh') {
-          // 刷新按钮
-          ele.type = 'slot';
-          ele.slotName = prop;
-          ele.type_ = type;
-          ele.prop = prop;
-
-          let btnType = 'primary';
-          let size = 'mini';
-          ele = {
-            ...ele,
-            props: {
-              type: btnType,
-              size,
-              ...props
-            }
-          };
-
-          this.tableHeaderSlots.push(ele);
-        } else if (type === 'slot') {
+        if (type === 'slot') {
           if (!slotName) {
             ele.slotName = prop;
           }
-          // if (!this.checkTableSlots(ele.slotName)) {
           this.tableHeaderSlots.push(ele);
-          // }
         }
         return ele;
       });
@@ -272,17 +265,13 @@ export default {
           if (!ele.slotName) {
             ele.slotName = ele.prop;
           }
-          // if (!this.checkTableSlots(ele.slotName)) {
           this.tableSlots.push(ele);
-          // }
         }
         if (headerSlotName) {
-          // if (!this.checkTableSlots(headerSlotName)) {
           this.tableSlots.push({
             ...ele,
             slotName: headerSlotName
           });
-          // }
         }
         this.tableColumns_.push(ele);
       });
@@ -292,7 +281,7 @@ export default {
      * 处理表数据
      */
     handleTableData(data) {
-      if (data && !this.httpConfig.url) {
+      if (data && !this.httpConfig.url && !this.httpConfig.requestMethod) {
         this.isParentData = true;
         this.tableData_ = cloneDeep(data || []);
       }
@@ -307,7 +296,6 @@ export default {
         pageSize = 10,
         pageSizes = [10, 20, 50, 100],
         layout = 'total, sizes, ->, prev, pager, next, jumper',
-        // layout = 'slot, prev, pager, next, jumper',
         total = 0
       } = data_;
 
@@ -343,17 +331,6 @@ export default {
         }
       });
       return item;
-    },
-
-    // 检查tableSlots中是否已经存在slotName的slot
-    checkTableSlots(slotName) {
-      let flag = false;
-      this.tableSlots.forEach((ele) => {
-        if (ele.slotName === slotName) {
-          flag = true;
-        }
-      });
-      return flag;
     },
 
     /** 表格点击事件 */
@@ -408,23 +385,23 @@ export default {
       if (params.column.sortable === 'custom') {
         // 升序
         if (params.order === 'ascending') {
-          this.sortParams.sort = 1;
+          this.orderParams.order = params.order;
         } else if (params.order === 'descending') {
           // 降序
-          this.sortParams.sort = 2;
+          this.orderParams.order = params.order;
         } else {
           // 初始化
-          this.sortParams.sort = null;
+          this.orderParams.order = null;
         }
-        if (this.sortParams.sort !== null) {
+        if (this.orderParams.order !== null) {
           let item = this.getTableColumnByProp(params.prop);
           if (item.sortProp) {
-            this.sortParams.orderBy = item.sortProp;
+            this.orderParams.prop = item.sortProp;
           } else {
-            this.sortParams.orderBy = params.prop;
+            this.orderParams.prop = params.prop;
           }
         } else {
-          this.sortParams.orderBy = null;
+          this.orderParams.prop = null;
         }
         this.loadData();
       }
@@ -439,10 +416,9 @@ export default {
       this.loadData();
     },
 
-    /** 刷新事件 */
-    refreshClick() {
-      this.$emit('refresh');
-      this.loadData();
+    /** 重置事件 */
+    resetFields() {
+      this.$emit('reset');
     },
 
     /** pageSize 改变时会触发 */
@@ -470,83 +446,130 @@ export default {
           return;
         }
         this.httpLoading = true;
-        let { method = 'post', url, header, dataFormatter } = this.httpConfig;
+        let {
+          method = 'post',
+          url,
+          header,
+          requestMethod,
+          requestConfig
+        } = this.httpConfig;
         let data = this.getHttpParams();
 
-        ajax({
-          type: method,
-          url,
-          data,
-          header: {
-            Accept: 'application/json, */*',
-            'Content-Type': 'application/json;charset=UTF-8',
-            ...header
-          },
-          success: (res) => {
-            let { total, list } = res.data || {};
-            this.pagination_.total = total;
+        if (requestMethod) {
+          requestMethod(data, requestConfig, this.httpLoading)
+            .then((res) => {
+              console.log(res);
 
-            if (dataFormatter) {
-              list = dataFormatter(list, res);
+              this.handelResponse(res);
+              this.httpLoading = false;
+            })
+            .catch(() => {
+              this.httpLoading = false;
+            });
+        } else {
+          ajax({
+            type: method,
+            url,
+            data,
+            header: {
+              Accept: 'application/json, */*',
+              'Content-Type': 'application/json;charset=UTF-8',
+              ...header
+            },
+            success: (res) => {
+              this.handelResponse(res);
+              this.httpLoading = false;
+            },
+            error: () => {
+              this.httpLoading = false;
             }
-            this.tableData_ = list || [];
-            this.loadDataSuccess();
-            this.httpLoading = false;
-          },
-          error: () => {
-            this.httpLoading = false;
-          }
-        });
+          });
+        }
       }
+    },
+
+    /** 处理请求结果 */
+    handelResponse(res) {
+      if (this.interceptResponse) {
+        let { dataFormatter } = this.httpConfig;
+        let { tableData, total } = this.interceptResponse(res, this.httpConfig);
+        this.pagination_.total = total || 0;
+        if (dataFormatter) {
+          tableData = dataFormatter(tableData, res);
+        }
+        this.tableData_ = tableData || [];
+      }
+      this.loadDataSuccess();
+    },
+
+    /** 获取组装完成后的接口请求参数 - 给外部使用 */
+    getRequestParams() {
+      return this.getHttpParams();
     },
 
     /** 获取组装完成后的接口请求参数 */
     getHttpParams() {
-      let data = {
-        page: {
-          pageNum: this.currentPage_,
-          pageSize: this.pageSize_,
-          sort: null,
-          orderBy: null,
-          isPaging: true
-        }
-      };
-      // 组装排序数据
-      if (this.sortParams.sortOrder !== null) {
-        data.page.sort = this.sortParams.sort;
-        data.page.orderBy = this.sortParams.orderBy;
+      let data = null;
+      if (this.interceptRequest) {
+        data = this.interceptRequest(
+          {
+            filters: this.searchParams,
+            page: {
+              currentPage: this.isPaging ? this.pagination_.currentPage : null,
+              pageSize: this.isPaging ? this.pagination_.pageSize : null,
+              isPaging: this.isPaging
+            },
+            orderParams: {
+              ...this.orderParams
+            }
+          },
+          this.httpConfig
+        );
       }
+      // let data = {
+      //   page: {
+      //     pageNum: this.currentPage_,
+      //     pageSize: this.pageSize_,
+      //     sort: null,
+      //     orderBy: null,
+      //     isPaging: true
+      //   }
+      // };
+      // // 组装排序数据
+      // if (this.sortParams.sortOrder !== null) {
+      //   data.page.sort = this.sortParams.sort;
+      //   data.page.orderBy = this.sortParams.orderBy;
+      // }
 
-      // 组装分页
-      if (this.isPaging) {
-        data.page.pageNum = this.pagination_.currentPage;
-        data.page.pageSize = this.pagination_.pageSize;
-        data.page.isPaging = this.isPaging;
-      } else {
-        data.page.isPaging = this.isPaging;
-      }
+      // // 组装分页
+      // if (this.isPaging) {
+      //   data.page.pageNum = this.pagination_.currentPage;
+      //   data.page.pageSize = this.pagination_.pageSize;
+      //   data.page.isPaging = this.isPaging;
+      // } else {
+      //   data.page.isPaging = this.isPaging;
+      // }
 
       let { paramFormatter } = this.httpConfig;
-      let params = cloneDeep(this.searchParams || {});
+      let params = cloneDeep(data || {});
 
       if (paramFormatter) {
         params = paramFormatter(params);
       }
       data = {
-        ...params,
-        ...data
+        ...params
       };
       return data;
+    },
+
+    /** 获取表格数据 */
+    getTableData() {
+      return cloneDeep(this.tableData_);
     },
 
     /** 加载成功调用的事件 */
     loadDataSuccess() {
       this.$emit('loadSuccess', this.tableData_);
-    },
-
-    /** 打开高级搜索弹窗 */
-    openSearch() {
-      this.$refs.search && this.$refs.search[0].openDialog();
     },
 
     /** 用于多选表格，清空用户的选择 */
@@ -565,6 +588,13 @@ export default {
     table: {
       handler(newVal) {
         this.handleTable(newVal);
+      },
+      immediate: true,
+      deep: true
+    },
+    filters: {
+      handler(newVal) {
+        this.handleFilters(newVal);
       },
       immediate: true,
       deep: true

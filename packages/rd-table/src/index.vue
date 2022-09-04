@@ -71,134 +71,117 @@
           :fixed="hasFixed"
           :selectable="table_.selectable"
         />
-        <template v-if="refreshFlag">
-          <template v-for="(column, index) in tableColumns_">
-            <!-- 没有类型时直接用原本的列 主要是未了使用element的table自带的tree功能 -->
-            <el-table-column
-              v-if="!column.type"
-              :key="index"
-              v-bind="column"
-              :type="undefined"
-            >
-              <!-- 按正常逻辑这里应该是判断headerSlotName存不存在来确定使不使用header插槽，但是这里不知道为什么按正常写法不生效，所以直接就强制使用了header插槽，有待研究 -->
-              <template slot="header" slot-scope="scope">
-                <column-header
-                  :column="column"
-                  :index="index"
-                  :scope="scope"
-                  @filter="columnFilter"
+        <template v-for="(column, index) in tableColumns_">
+          <!-- 没有类型时直接用原本的列 主要是未了使用element的table自带的tree功能 -->
+          <el-table-column
+            v-if="!column.type"
+            :key="index"
+            v-bind="column"
+            :type="undefined"
+          >
+            <!-- 按正常逻辑这里应该是判断headerSlotName存不存在来确定使不使用header插槽，但是这里不知道为什么按正常写法不生效，所以直接就强制使用了header插槽，有待研究 -->
+            <template slot="header" slot-scope="scope">
+              <column-header :column="column" :index="index" :scope="scope">
+                <slot
+                  v-if="column.headerSlotName"
+                  :name="column.headerSlotName"
+                  v-bind="scope"
+                />
+              </column-header>
+            </template>
+            <template v-if="column.children && column.children.length > 0">
+              <template v-for="(col, i) in column.children">
+                <el-table-column
+                  v-if="!col.type"
+                  :key="i"
+                  v-bind="col"
+                  :type="undefined"
                 >
-                  <slot
-                    v-if="column.headerSlotName"
-                    :name="column.headerSlotName"
-                    v-bind="scope"
-                  />
-                </column-header>
+                </el-table-column>
               </template>
-              <template v-if="column.children && column.children.length > 0">
-                <template v-for="(col, i) in column.children">
-                  <el-table-column
-                    v-if="!col.type"
-                    :key="i"
-                    v-bind="col"
-                    :type="undefined"
-                  >
-                  </el-table-column>
-                </template>
-              </template>
-            </el-table-column>
-            <el-table-column
-              v-else
-              :key="index"
-              v-bind="column"
-              :filtered-value="column.filteredValue"
-              :type="undefined"
-            >
-              <!-- 按正常逻辑这里应该是判断headerSlotName存不存在来确定使不使用header插槽，但是这里不知道为什么按正常写法不生效，所以直接就强制使用了header插槽，有待研究 -->
-              <template slot="header" slot-scope="scope">
-                <column-header
-                  :column="column"
-                  :index="index"
-                  :scope="scope"
-                  @filter="columnFilter"
+            </template>
+          </el-table-column>
+          <el-table-column
+            v-else
+            :key="index"
+            v-bind="column"
+            :filtered-value="column.filteredValue"
+            :type="undefined"
+          >
+            <!-- 按正常逻辑这里应该是判断headerSlotName存不存在来确定使不使用header插槽，但是这里不知道为什么按正常写法不生效，所以直接就强制使用了header插槽，有待研究 -->
+            <template slot="header" slot-scope="scope">
+              <column-header :column="column" :index="index" :scope="scope">
+                <slot
+                  v-if="column.headerSlotName"
+                  :name="column.headerSlotName"
+                  v-bind="scope"
+                />
+              </column-header>
+            </template>
+            <!-- 目前复杂表头这种写法只能兼容到2级，想要多层级，需要使用组件递归去实现 -->
+            <template v-if="column.children && column.children.length > 0">
+              <template v-for="(col, i) in column.children">
+                <el-table-column
+                  :key="i"
+                  v-bind="col"
+                  :filtered-value="col.filteredValue"
+                  :type="undefined"
                 >
-                  <slot
-                    v-if="column.headerSlotName"
-                    :name="column.headerSlotName"
-                    v-bind="scope"
-                  />
-                </column-header>
-              </template>
-              <!-- 目前复杂表头这种写法只能兼容到2级，想要多层级，需要使用组件递归去实现 -->
-              <template v-if="column.children && column.children.length > 0">
-                <template v-for="(col, i) in column.children">
-                  <el-table-column
-                    :key="i"
-                    v-bind="col"
-                    :filtered-value="col.filteredValue"
-                    :type="undefined"
-                  >
-                    <!-- 按正常逻辑这里应该是判断headerSlotName存不存在来确定使不使用header插槽，但是这里不知道为什么按正常写法不生效，所以直接就强制使用了header插槽，有待研究 -->
-                    <template slot="header" slot-scope="scope">
-                      <column-header
-                        :column="col"
-                        :index="i"
+                  <!-- 按正常逻辑这里应该是判断headerSlotName存不存在来确定使不使用header插槽，但是这里不知道为什么按正常写法不生效，所以直接就强制使用了header插槽，有待研究 -->
+                  <template slot="header" slot-scope="scope">
+                    <column-header :column="col" :index="i" :scope="scope">
+                      <slot
+                        v-if="col.headerSlotName"
+                        :name="col.headerSlotName"
+                        v-bind="scope"
+                      />
+                    </column-header>
+                  </template>
+                  <template v-if="col.type">
+                    <template slot-scope="scope">
+                      <!-- 插槽 -->
+                      <slot
+                        v-if="col.type === 'slot'"
+                        :name="col.slotName"
+                        v-bind="scope"
+                        :value="scope.row[col.prop]"
+                      />
+                      <!-- 其他内容项 -->
+                      <table-column
+                        v-else
                         :scope="scope"
-                        @filter="columnFilter"
-                      >
-                        <slot
-                          v-if="col.headerSlotName"
-                          :name="col.headerSlotName"
-                          v-bind="scope"
-                        />
-                      </column-header>
+                        :column="col"
+                        :dropList="dropList"
+                        @change="rowDataChange"
+                        @click="rowItemClick"
+                      />
                     </template>
-                    <template v-if="col.type">
-                      <template slot-scope="scope">
-                        <!-- 插槽 -->
-                        <slot
-                          v-if="col.type === 'slot'"
-                          :name="col.slotName"
-                          v-bind="scope"
-                          :value="scope.row[col.prop]"
-                        />
-                        <!-- 其他内容项 -->
-                        <table-column
-                          v-else
-                          :scope="scope"
-                          :column="col"
-                          :dropList="dropList"
-                          @change="rowDataChange"
-                          @click="rowItemClick"
-                        />
-                      </template>
-                    </template>
-                  </el-table-column>
-                </template>
+                  </template>
+                </el-table-column>
               </template>
-              <!-- 内容插槽 -->
-              <template v-if="column.type" slot-scope="scope">
-                <template>
-                  <!-- 插槽 -->
-                  <slot
-                    v-if="column.type === 'slot'"
-                    :name="column.slotName"
-                    v-bind="scope"
-                    :value="scope.row[column.prop]"
-                  />
-                  <!-- 其他内容项 -->
-                  <table-column
-                    v-else
-                    :scope="scope"
-                    :column="tableColumns_[index]"
-                    :dropList="dropList"
-                    @change="rowDataChange"
-                    @click="rowItemClick"
-                  />
-                </template>
+            </template>
+            <!-- 内容插槽 -->
+            <template v-if="column.type" slot-scope="scope">
+              <template>
+                <!-- 插槽 -->
+                <slot
+                  v-if="column.type === 'slot'"
+                  :name="column.slotName"
+                  v-bind="scope"
+                  :value="scope.row[column.prop]"
+                />
+                <!-- 其他内容项 -->
+                <table-column
+                  v-else
+                  :scope="scope"
+                  :column="tableColumns_[index]"
+                  :dropList="dropList"
+                  @change="rowDataChange"
+                  @click="rowItemClick"
+                />
               </template>
-            </el-table-column>
-          </template>
+            </template>
+          </el-table-column>
         </template>
       </el-table>
     </div>
@@ -276,11 +259,11 @@ export default {
       /** 当前选中的行数据 */
       selections: [],
       /** 是否有固定列 */
-      hasFixed: false,
+      hasFixed: false
       /** filters数据值是否change过 */
-      filtersChaneg: false,
+      // filtersChaneg: false,
       /** 刷新标识 */
-      refreshFlag: true
+      // refreshFlag: true
     };
   },
   computed: {
@@ -407,16 +390,16 @@ export default {
       });
       this.setHasFixed(hasFixed);
 
-      // 处理filters数据 因为这部分数据处理涉及到tableData，所以需要在computed中处理比较好
-      cols = cols.map((col) => {
-        return this.handleFilters(col);
-      });
+      // // 处理filters数据 因为这部分数据处理涉及到tableData，所以需要在computed中处理比较好
+      // cols = cols.map((col) => {
+      //   return this.handleFilters(col);
+      // });
 
       // console.log('--------------', cols);
       /** 由于某种未知原因，在col.filters的长度发生变化后，el-table-column组件不会及时响应（猜测有缓存？），所以在数据变化后直接重新渲染一次，但是会很影响性能，待后续再优化吧 */
-      if (this.filtersChaneg) {
-        this.updateRefreshFlag();
-      }
+      // if (this.filtersChaneg) {
+      //   this.updateRefreshFlag();
+      // }
       return cols;
     }
   },
@@ -490,7 +473,7 @@ export default {
 
       // 因为自定义了formatter的类型可能是string，这会导致el-table自带的formatter解析报错，而我们本来就没有使用自带的formatter解析，所以直接拿另外的属性去存着
       let formatter_c;
-      if (formatter) {
+      if (type && formatter) {
         formatter_c = formatter;
         formatter = undefined;
       }
@@ -543,59 +526,59 @@ export default {
     },
 
     /** 处理数据值过滤 */
-    handleFilters(col) {
-      let { filters, prop, children } = col;
+    // handleFilters(col) {
+    //   let { filters, prop, children } = col;
 
-      // 当列中存在filters且为true，说明源列数据中开启了列过滤，而且这次处理为第一次处理
-      if (filters === true) {
-        // 这个时候直接取数据值作为过滤下拉数据
-        let ary = [];
-        this.tableData_All.forEach((data) => {
-          let item = ary.find((e) => {
-            return e.value === data[prop];
-          });
-          if (!item) {
-            ary.push({
-              text: data[prop],
-              value: data[prop]
-            });
-          }
-        });
-        this.filtersChaneg = true;
-        col.filters = ary;
-        col.filterMethod = this.filterHandler;
-        col.filteredValue =
-          col.filteredValue || col.filters.map((ele) => ele.value);
-      } else if (Array.isArray(filters) && filters.length > 0) {
-        // 当列中存在filters且为数组，这里有两种情况，一种是源列数据中指定的就是数组，另一种情况源列数据中指定的是true，并且已经经过了上述第一次处理，这个时候就要看看源列数据中究竟是什么值
-        let colInAll = this.tableColumns_All.find((c) => {
-          return c.prop === col.prop;
-        });
+    //   // 当列中存在filters且为true，说明源列数据中开启了列过滤，而且这次处理为第一次处理
+    //   if (filters === true) {
+    //     // 这个时候直接取数据值作为过滤下拉数据
+    //     let ary = [];
+    //     this.tableData_All.forEach((data) => {
+    //       let item = ary.find((e) => {
+    //         return e.value === data[prop];
+    //       });
+    //       if (!item) {
+    //         ary.push({
+    //           text: data[prop],
+    //           value: data[prop]
+    //         });
+    //       }
+    //     });
+    //     this.filtersChaneg = true;
+    //     col.filters = ary;
+    //     col.filterMethod = this.filterHandler;
+    //     col.filteredValue =
+    //       col.filteredValue || col.filters.map((ele) => ele.value);
+    //   } else if (Array.isArray(filters) && filters.length > 0) {
+    //     // 当列中存在filters且为数组，这里有两种情况，一种是源列数据中指定的就是数组，另一种情况源列数据中指定的是true，并且已经经过了上述第一次处理，这个时候就要看看源列数据中究竟是什么值
+    //     let colInAll = this.tableColumns_All.find((c) => {
+    //       return c.prop === col.prop;
+    //     });
 
-        // 如果源列数据中filters为true，说明filters中的数据是取的data数据值，继续取数据值就行
-        if (colInAll.filters === true) {
-          col.filters = this.tableData_All.map((data) => {
-            return {
-              text: data[prop],
-              value: data[prop]
-            };
-          });
-        } else if (Array.isArray(filters)) {
-          // 如果源列数据中filters为数组，那就继续取源列数据中的数组
-          col.filters = filters;
-        }
-        this.filtersChaneg = true;
-        col.filterMethod = this.filterHandler;
-        col.filteredValue =
-          col.filteredValue || col.filters.map((ele) => ele.value);
-      }
-      if (children && children.length) {
-        col.children = children.map((c) => {
-          return this.handleFilters(c);
-        });
-      }
-      return col;
-    },
+    //     // 如果源列数据中filters为true，说明filters中的数据是取的data数据值，继续取数据值就行
+    //     if (colInAll.filters === true) {
+    //       col.filters = this.tableData_All.map((data) => {
+    //         return {
+    //           text: data[prop],
+    //           value: data[prop]
+    //         };
+    //       });
+    //     } else if (Array.isArray(filters)) {
+    //       // 如果源列数据中filters为数组，那就继续取源列数据中的数组
+    //       col.filters = filters;
+    //     }
+    //     this.filtersChaneg = true;
+    //     col.filterMethod = this.filterHandler;
+    //     col.filteredValue =
+    //       col.filteredValue || col.filters.map((ele) => ele.value);
+    //   }
+    //   if (children && children.length) {
+    //     col.children = children.map((c) => {
+    //       return this.handleFilters(c);
+    //     });
+    //   }
+    //   return col;
+    // },
 
     /** 用于多选表格，清空用户的选择 */
     clearSelection() {
@@ -622,6 +605,17 @@ export default {
       });
     },
 
+    /** 手动对 Table 进行排序。参数prop属性指定排序列，order指定排序顺序 */
+    sort(prop, order) {
+      let table = this.$refs['el-table'];
+      table.sort(prop, order);
+    },
+
+    /** 获取表格数据 */
+    getTableData(){
+      return  cloneDeep(this.tableData_);
+    },
+
     /** 获取列样式 */
     // getClassName(column, index) {
     //   let { className } = column;
@@ -639,12 +633,12 @@ export default {
     },
 
     /** 设置hasFixed */
-    updateRefreshFlag() {
-      this.refreshFlag = false;
-      this.$nextTick(() => {
-        this.refreshFlag = true;
-      });
-    },
+    // updateRefreshFlag() {
+    //   this.refreshFlag = false;
+    //   this.$nextTick(() => {
+    //     this.refreshFlag = true;
+    //   });
+    // },
 
     /** filter过滤事件 */
     filterHandler(value, row, column) {
@@ -757,19 +751,19 @@ export default {
     },
 
     /** 过滤筛选事件 */
-    columnFilter(params) {
-      // 现在用el-popover显示的过滤列，他在文档流中会一直存在，所以这里没有处理columnFilter触发之后的filteredValue，按道理说要处理一下，形成闭环
-      let { value, column } = params;
-      this.tableData_ = this.tableData_All.filter((ele) => {
-        let flag = false;
-        value.forEach((e) => {
-          if (column.filterMethod(e, ele, column)) {
-            flag = true;
-          }
-        });
-        return flag;
-      });
-    },
+    // columnFilter(params) {
+    //   // 现在用el-popover显示的过滤列，他在文档流中会一直存在，所以这里没有处理columnFilter触发之后的filteredValue，按道理说要处理一下，形成闭环
+    //   let { value, column } = params;
+    //   this.tableData_ = this.tableData_All.filter((ele) => {
+    //     let flag = false;
+    //     value.forEach((e) => {
+    //       if (column.filterMethod(e, ele, column)) {
+    //         flag = true;
+    //       }
+    //     });
+    //     return flag;
+    //   });
+    // },
 
     /** 列的过滤事件 */
     visibleChange() {
@@ -904,9 +898,9 @@ export default {
           padding: 0;
 
           // 自定义过滤数据功能，所以这个地方隐藏自带的功能按钮
-          .el-table__column-filter-trigger {
-            display: none;
-          }
+          // .el-table__column-filter-trigger {
+          //   display: none;
+          // }
         }
       }
     }

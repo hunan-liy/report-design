@@ -136,7 +136,7 @@ export default {
       let { labelWidth, isCheckForm = true, size = 'small' } = data_clone;
 
       if (!labelWidth) {
-        labelWidth = '110px';
+        labelWidth = '100px';
       }
 
       this.config_ = {
@@ -145,7 +145,7 @@ export default {
         size,
         ...data_clone
       };
-      console.log(this.config_);
+      // console.log(this.config_);
     },
 
     /**
@@ -252,9 +252,9 @@ export default {
            * 而且对于checkbox-group/transfer的rules会在每次noticDataChange直接触发，猜测是因为checkbox-group/transfer的rules的检测是根据指针指向变化来检测的而数据每次都是深拷贝的，这个地方属于bug，待优化
            */
           if (type === 'checkbox' || type === 'transfer') {
-            value = value === [];
+            value = [];
           } else {
-            value = value === null;
+            value = null;
           }
           this.$set(this.forms, prop, value);
           this.formsIsChange = true;
@@ -273,7 +273,7 @@ export default {
               if (type === 'checkbox' || type === 'transfer') {
                 value = [];
               } else {
-                value = value === null;
+                value = null;
               }
               this.$set(this.forms, _prop, value);
               this.formsIsChange = true;

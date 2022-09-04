@@ -1,21 +1,10 @@
 <template>
   <div>
     <rd-table
-      :table="table"
-      :headers="headers"
+      ref="table"
       :tableColumns="tableColumns"
       :tableData="tableData"
-      :dropList="dropList"
-      @row-item-click="rowClick"
-      @row-change="rowChange"
     >
-      <div slot="test" slot-scope="scope">我使用了插槽{{ scope.value }}</div>
-      <span slot="header1" slot-scope="scope">
-        插槽-{{ scope.column.label }}
-      </span>
-      <span slot="headerSlot" slot-scope="scope">
-        头部-{{ scope.slotName }}
-      </span>
     </rd-table>
   </div>
 </template>
@@ -23,197 +12,38 @@
 export default {
   data() {
     return {
-      table: {
-        multipleTable: true,
-        visibleCols: true,
-        // maxHeight: 300,
-        highlightCurrentRow: true
-        // size: 'mini'
-      },
-      headers: {
-        add: {
-          label: '修改'
-        },
-        batchEdit: {
-          label: '删除'
-        },
-        batchDelete: {
-          label: '删除',
-          hidden: () => {
-            return true;
-          }
-        },
-        headerSlot: {
-          type: 'slot'
-        }
-      },
       tableColumns: [
         {
-          label: '月份',
-          prop: 'month',
-          minWidth: 100,
-          sortable: true
-          // hidden: ()=>{
-          //   return true
-          // }
-        },
-        {
-          type: 'slot',
-          label: '插槽',
-          prop: 'test',
-          minWidth: 100,
-          sortable: true
-        },
-        {
-          type: 'text',
           label: '姓名',
-          prop: 'name',
-          headerSlotName: 'header1',
-          renderType: 'tooltip',
-          ellipsis: 2,
-          minWidth: 100,
-          sortable: true
+          prop: 'userName'
         },
         {
-          type: 'link',
-          label: 'link',
-          prop: 'link',
-          minWidth: 100,
-          sortable: true
+          label: '年龄',
+          prop: 'age'
         },
         {
-          type: 'switch',
-          label: 'switch',
-          prop: 'checkbox',
-          props: {
-            activeText: '开启',
-            inactiveText: '关闭'
-          },
-          minWidth: 100,
-          sortable: true
-        },
-        {
-          type: 'selectDialog',
-          label: '工号',
-          prop: 'selectDialog',
-          minWidth: 200,
-          sortable: true,
-          props: {
-            multiple: true,
-            rowProp: 'typeCode',
-            reportConfig: {
-              headers: {
-                // 高级搜索按钮
-                search: {
-                  type: 'search',
-                  label: '高级搜索',
-                  props: {
-                    // TOCUS 高级搜索按钮打开的表单需要根据业务需求去配置
-                    formConfig: {
-                      typeCode: {
-                        type: 'input',
-                        label: '分类编码'
-                      },
-                      typeName: {
-                        type: 'input',
-                        label: '分类名称'
-                      }
-                    }
-                  }
-                },
-                // 刷新按钮
-                refresh: {
-                  type: 'refresh',
-                  label: '刷新'
-                }
-              },
-              /** TOCUS 表格列头配置 */
-              tableColumns: [
-                {
-                  label: '分类编码',
-                  prop: 'typeCode',
-                  sortProp: 'TypeCode',
-                  sortable: 'custom'
-                },
-                {
-                  label: '分类名称',
-                  prop: 'typeName',
-                  sortProp: 'TypeName',
-                  sortable: 'custom'
-                },
-                {
-                  label: '分类描述',
-                  prop: 'typeDescribe',
-                  sortProp: 'TypeDescribe',
-                  sortable: 'custom'
-                },
-                {
-                  label: '父分类名称',
-                  prop: 'parentName',
-                  sortProp: 'ParentName',
-                  sortable: 'custom'
-                }
-              ],
-              /** 请求接口相关配置 */
-              httpConfig: {
-                // TOCUS 请求数据的接口
-                url: 'http://222.244.145.28:7089/SYS_TableType/QueryTableTypePage'
-              }
-            }
-          }
-        },
-        {
-          type: 'input',
-          label: '工号',
-          prop: 'jobNumber',
-          minWidth: 150,
-          sortable: true,
-          props: {
-            disabled: (row, column, value, index) => {
-              if (index === 2) {
-                return true;
-              }
-              return false;
-            }
-          }
-        },
-        {
-          type: 'inputNumber',
-          label: '计数器',
-          prop: 'inputNumber',
-          minWidth: 150,
-          sortable: true
-        },
-        {
-          type: 'image',
-          label: '头像',
-          prop: 'avatar',
-          props: {
-            width: '60px',
-            height: '60px',
-            // error: require('./u156.svg')
-          },
-          sortable: true
-        },
-        {
-          type: 'html',
-          label: '代码片段',
-          prop: 'html',
-          minWidth: 100,
-          sortable: true
-        },
-        {
-          type: 'select',
           label: '性别',
           prop: 'sex',
-          sortable: true
+          formatter: (row) => {
+            let { sex } = row;
+            if (sex === 1) {
+              return '男';
+            } else {
+              return '女';
+            }
+          }
         },
         {
-          type: 'checkbox',
-          label: 'checkbox',
-          prop: 'checkbox',
-          minWidth: 100,
-          sortable: true
+          label: '生日',
+          prop: 'birthday'
+        },
+        {
+          label: '邮箱',
+          prop: 'email'
+        },
+        {
+          label: '地址',
+          prop: 'address'
         },
         {
           type: 'operation',
@@ -226,23 +56,7 @@ export default {
             },
             {
               prop: 'delete',
-              label: '删除1'
-            },
-            {
-              prop: 'delete',
-              label: '删除2'
-            },
-            {
-              prop: 'delete',
-              label: '删除3'
-            },
-            {
-              prop: 'delete',
-              label: '删除4'
-            },
-            {
-              prop: 'delete',
-              label: '删除5'
+              label: '删除'
             }
           ]
         }
@@ -250,90 +64,60 @@ export default {
       tableData: [
         {
           id: 1,
-          month: '2022-05',
-          test: '插槽数据1',
-          name: '这是一个很长很长很长很长很长很长的名字',
-          link: 'https://www.baidu.com/',
-          switch: false,
-          selectDialog: ['FXX', 'AAA'],
-          jobNumber: '2022050601',
-          inputNumber: null,
-          avatar: 'https://pic.5tu.cn/uploads/allimg/1605/191504058090.jpg',
-          html: '<a href="https://www.baidu.com/" target="_blank">百度一下你就知道</a>',
+          age: 24,
           sex: 1,
-          checkbox: true
+          birthday: '1982-11-05',
+          email: 's.ylverdbkr@mlcxkb.cc',
+          address: '新和县',
+          userName: '武芳'
         },
         {
           id: 2,
-          month: '2022-06',
-          test: '插槽数据2',
-          name: '吴彦祖',
-          link: '链接文字',
-          switch: true,
-          selectDialog: null,
-          jobNumber: '124578963',
-          inputNumber: '2',
-          avatar:
-            'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-          html: '<p>在保留当前页面状态的情况下，告知用户并承载相关操作。</p>',
+          age: 15,
           sex: 2,
-          checkbox: false
+          birthday: '2010-11-22',
+          email: 'x.phqdyoxwx@dlgj.name',
+          address: '平川区',
+          userName: '龙丽'
         },
         {
           id: 3,
-          month: '2022-07',
-          test: '插槽数据3',
-          name: '刘德华',
-          link: '链接文字',
-          switch: false,
-          selectDialog: null,
-          jobNumber: '124578963',
-          inputNumber: '2',
-          avatar:
-            'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-          html: '<p>在保留当前页面状态的情况下，告知用户并承载相关操作。</p>',
-          sex: 2,
-          checkbox: true
+          age: 20,
+          sex: 1,
+          birthday: '2020-12-01',
+          email: 'c.gkybrgtla@oqfzodtgi.iq',
+          address: '磐安县',
+          userName: '蔡芳'
         },
         {
           id: 4,
-          month: '2022-08',
-          test: '插槽数据4',
-          name: '古天乐',
-          link: '链接文字',
-          switch: true,
-          selectDialog: null,
-          jobNumber: '124578963',
-          inputNumber: '2',
-          avatar:
-            'https://fuss10.elemecdn.com/e/5d/4a731a905941a4af5f44c0c25941171jpeg.jpeg',
-          html: '<p>在保留当前页面状态的情况下，告知用户并承载相关操作。</p>',
+          age: 20,
           sex: 1,
-          checkbox: true
+          birthday: '1998-01-14',
+          email: 'v.pbmk@gndxbcjee.lk',
+          address: '河北区',
+          userName: '夏丽'
+        },
+        {
+          id: 5,
+          age: 15,
+          sex: 2,
+          birthday: '2003-04-11',
+          email: 'n.jtjsirxdlq@kbemg.an',
+          address: '-',
+          userName: '戴丽'
+        },
+        {
+          id: 6,
+          age: 16,
+          sex: 1,
+          birthday: '1972-01-28',
+          email: 'n.iqt@gxcbmi.cq',
+          address: '彝良县',
+          userName: '卢丽'
         }
-      ],
-      dropList: {
-        sex: [
-          {
-            label: '男',
-            value: 1
-          },
-          {
-            label: '女',
-            value: 2
-          }
-        ]
-      },
-      row_record: null
+      ]
     };
-  },
-  methods: {
-    rowClick(params) {
-      console.log('你点击了行内元素', params);
-    },
-    rowChange(params) {
-      console.log('你change', params);
-    }
   }
 };
 </script>
