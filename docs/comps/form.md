@@ -34,9 +34,9 @@ export default {
           label: 'inputSuffixes',
           suffixes: '<i class="el-icon-share"></i>'
         },
-        selectDialog: {
-          type: 'selectDialog',
-          label: 'selectDialog',
+        dialogSelect: {
+          type: 'dialogSelect',
+          label: 'dialogSelect',
           props: {
             rowProps: {
               value: 'id',
@@ -101,7 +101,7 @@ export default {
                 }
               ],
               httpConfig: {
-                url: 'https://www.fastmock.site/mock/de66cd0ff6569e78bb9857a0e42035f9/report-design/select-dialog'
+                url: 'https://www.fastmock.site/mock/de66cd0ff6569e78bb9857a0e42035f9/report-design/dialog-select'
               }
             }
           },
@@ -215,7 +215,7 @@ export default {
         id: 10,
         text: '文字信息',
         input: 'input',
-        selectDialog: {
+        dialogSelect: {
           label: '陆芳',
           value: 2
         },
@@ -798,7 +798,7 @@ export default {
 #### change form表单元素值change事件
 - prop 触发change的元素的prop
 - value 当前元素change后的值
-- rows 当前选中的行，只有selectDialog才有
+- rows 当前选中的行，只有dialogSelect才有
 
 
 ### Form Methods
@@ -834,22 +834,22 @@ export default {
 
 
 ### FormConfig
-| 参数         | 说明                                                                                                              | 类型                                    | 可选值                                                                                                                                                                      | 默认值 |
-| ------------ | ----------------------------------------------------------------------------------------------------------------- | --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
-| type         | 表单元素类型                                                                                                      | string                                  | text，tadio，checkbox，input，inputSuffixes，inputNumber，select，cascader，switch，slider，timePicker，datePicker，rate，colorPicker，transfer，selectDialog，upload，slot | text   |
-| prop         | 表单域 model 字段，默认取formConifg的key值                                                                        | string                                  | —                                                                                                                                                                           | —      |
-| label        | 表单元素的label                                                                                                   | string                                  | —                                                                                                                                                                           | —      |
-| label-width  | 表单域标签的的宽度，例如 '50px'。支持 auto。                                                                      | string                                  | —                                                                                                                                                                           | —      |
-| col          | 表单元素大小，通过24分栏去控制每个元素的大小和位置                                                                | number                                  | —                                                                                                                                                                           | 12     |
-| width        | 与col功能一样，优先级高于col，但是不能同时使用，可以是px(50px)也可以是百分比（50%）                               | string                                  | —                                                                                                                                                                           | —      |
-| slotName     | 当type为slot时，使用插槽的名称，默认取FormConfig的prop                                                            | string                                  | —                                                                                                                                                                           | —      |
-| slotType     | 当type为slot时，是否将form-item作为整个插槽，item代表整个作为插槽                                                 | string                                  | —/item                                                                                                                                                                      | —      |
-| propGroup    | 当一个表单元素需要赋值多个prop时使用                                                                              | array                                   | —                                                                                                                                                                           | —      |
-| hidden       | 元素是否隐藏                                                                                                      | boolean/function(prop, value, formItem) | —                                                                                                                                                                           | —      |
-| props        | 每个表单类型在element-ui中自己的Attributes属性                                                                    | object                                  | —                                                                                                                                                                           | {}     |
-| rules        | 表单元素校验规则                                                                                                  | array                                   | —                                                                                                                                                                           | []     |
-| required     | 重写了表单元素是否必填，与rules作用一样，但是不能与rules一起使用，如果设置为true，会自动为表单元素加上默认的rules | boolean                                 | —                                                                                                                                                                           | —      |
-| show-message | 是否显示校验错误信息                                                                                              | boolean                                 | —                                                                                                                                                                           | true   |
+| 参数         | 说明                                                                                                              | 类型    | 可选值                                                                                                                                                                      | 默认值 |
+| ------------ | ----------------------------------------------------------------------------------------------------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| type         | 表单元素类型                                                                                                      | string  | text，tadio，checkbox，input，inputSuffixes，inputNumber，select，cascader，switch，slider，timePicker，datePicker，rate，colorPicker，transfer，dialogSelect，upload，slot | text   |
+| prop         | 表单域 model 字段，默认取formConifg的key值                                                                        | string  | —                                                                                                                                                                           | —      |
+| label        | 表单元素的label                                                                                                   | string  | —                                                                                                                                                                           | —      |
+| label-width  | 表单域标签的的宽度，例如 '50px'。支持 auto。                                                                      | string  | —                                                                                                                                                                           | —      |
+| col          | 表单元素大小，通过24分栏去控制每个元素的大小和位置                                                                | number  | —                                                                                                                                                                           | 12     |
+| width        | 与col功能一样，优先级高于col，但是不能同时使用，可以是px(50px)也可以是百分比（50%）                               | string  | —                                                                                                                                                                           | —      |
+| slotName     | 当type为slot时，使用插槽的名称，默认取FormConfig的prop                                                            | string  | —                                                                                                                                                                           | —      |
+| slotType     | 当type为slot时，是否将form-item作为整个插槽，item代表整个作为插槽                                                 | string  | —/item                                                                                                                                                                      | —      |
+| propGroup    | 当一个表单元素需要赋值多个prop时使用                                                                              | array   | —                                                                                                                                                                           | —      |
+| hidden       | 元素是否隐藏                                                                                                      | boolean | —                                                                                                                                                                           | —      |
+| props        | 每个表单类型在element-ui中自己的Attributes属性                                                                    | object  | —                                                                                                                                                                           | {}     |
+| rules        | 表单元素校验规则                                                                                                  | array   | —                                                                                                                                                                           | []     |
+| required     | 重写了表单元素是否必填，与rules作用一样，但是不能与rules一起使用，如果设置为true，会自动为表单元素加上默认的rules | boolean | —                                                                                                                                                                           | —      |
+| show-message | 是否显示校验错误信息                                                                                              | boolean | —                                                                                                                                                                           | true   |
 
 ### FormConfig props
 每个表单元素在element-ui中的原生属性（重写了其中部分属性）

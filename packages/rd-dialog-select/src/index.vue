@@ -1,22 +1,24 @@
 <template>
   <div
-    class="rd-select-dialog"
+    class="rd-dialog-select"
     @click.stop="toggleMenu"
     v-clickoutside="handleClose"
   >
     <div
-      v-if="multiple"
-      class="rd-select-dialog__tags"
+      v-if="multiple && getInputValue"
+      class="rd-dialog-select__tags"
+      :class="selectDisabled ? 'is-disabled tags-disabled' : ''"
       ref="tags"
       @mouseenter="mouseenter"
       @mouseleave="mouseleave"
+      @mousemove="mouseenter"
     >
       <transition-group @after-leave="resetInputHeight">
         <!-- <template v-if="type === typeMap.props"> -->
         <el-tag
           v-for="(item, index) in value_"
           :key="type === typeMap.props ? item.value : item"
-          :closable="true"
+          :closable="closable"
           :size="collapseTagSize"
           type="info"
           @close="deleteTag($event, item, index)"
@@ -30,7 +32,7 @@
         <!-- </template> -->
       </transition-group>
     </div>
-    <div v-if="showClose" class="icon-box">
+    <div v-show="showClose" class="icon-box">
       <i
         class="el-select__caret el-icon-circle-close"
         @mouseenter="mouseenter1"
@@ -43,19 +45,20 @@
       ref="reference"
       class="deep"
       :value="getInputValue"
-      :disabled="inputDisabled"
+      :disabled="selectDisabled"
       :readonly="true"
-      :placeholder="value_ ? '' : placeholder"
+      :placeholder="getInputValue ? '' : placeholder"
       :size="selectSize"
       :class="{ 'is-focus': visible }"
       @input="change()"
       @mouseenter.native="mouseenter"
       @mouseleave.native="mouseleave"
+      @mousemove.native="mouseenter"
     >
       <el-button
         slot="append"
         class="append-button"
-        :disabled="inputDisabled"
+        :disabled="selectDisabled"
         icon="el-icon-search"
         @click="check()"
         >选择</el-button
@@ -89,7 +92,7 @@ const typeMap = {
 };
 
 export default {
-  name: 'RdSelectDialog',
+  name: 'RdDialogSelect',
   components: {
     OpenDialog
   },
@@ -117,7 +120,7 @@ export default {
     },
     size: String,
     /** 匹配关系配置 存什么显示什么 */
-    rowProp: String,
+    // rowProp: String,
     /** 匹配关系配置 存value显示label */
     rowProps: {
       type: Object
@@ -176,16 +179,16 @@ export default {
           value = this.value_.join('');
         }
       } else {
-        if (this.type === this.typeMap.props) {
-          value = (this.value_ || {}).label || null;
-        } else {
-          value = this.value_;
-        }
+        // if (this.type === this.typeMap.props) {
+        value = (this.value_ || {}).label || null;
+        // } else {
+        //   value = this.value_;
+        // }
       }
       return value;
     },
     /** input组件是否禁用 */
-    inputDisabled() {
+    selectDisabled() {
       return this.disabled || (this.elForm || {}).disabled;
     },
     _elFormItemSize() {
@@ -199,64 +202,71 @@ export default {
     collapseTagSize() {
       return ['small', 'mini'].indexOf(this.selectSize) > -1 ? 'mini' : 'small';
     },
+    /** tag是否可以关闭 */
+    closable() {
+      return this.selectDisabled ? false : true;
+    },
     /** 是否显close闭图标 */
     showClose() {
       let hasValue = false;
-      if (this.type === this.typeMap.props) {
-        if (this.multiple) {
-          if (Array.isArray(this.value_) && this.value_.length > 0) {
-            hasValue = true;
-          }
-        } else {
-          if (
-            this.value_ &&
-            this.value_.value !== undefined &&
-            this.value_.value !== null &&
-            this.value_.value !== ''
-          ) {
-            hasValue = true;
-          }
+      // if (this.type === this.typeMap.props) {
+      if (this.multiple) {
+        if (Array.isArray(this.value_) && this.value_.length > 0) {
+          hasValue = true;
         }
-      } else if (this.type === this.typeMap.prop) {
-        if (this.multiple) {
-          if (Array.isArray(this.value_) && this.value_.length > 0) {
-            hasValue = true;
-          }
-        } else {
-          if (
-            this.value_ !== undefined &&
-            this.value_ !== null &&
-            this.value_ !== ''
-          ) {
-            hasValue = true;
-          }
+      } else {
+        if (
+          this.value_ &&
+          this.value_.value !== undefined &&
+          this.value_.value !== null &&
+          this.value_.value !== ''
+        ) {
+          hasValue = true;
         }
       }
+      // } else if (this.type === this.typeMap.prop) {
+      //   if (this.multiple) {
+      //     if (Array.isArray(this.value_) && this.value_.length > 0) {
+      //       hasValue = true;
+      //     }
+      //   } else {
+      //     if (
+      //       this.value_ !== undefined &&
+      //       this.value_ !== null &&
+      //       this.value_ !== ''
+      //     ) {
+      //       hasValue = true;
+      //     }
+      //   }
+      // }
       let criteria =
-        this.clearable && !this.inputDisabled && this.inputHovering && hasValue;
+        this.clearable &&
+        !this.selectDisabled &&
+        this.inputHovering &&
+        hasValue;
       return criteria;
     },
 
     /** 组件类型 */
     type() {
-      if (this.rowProps) {
-        return typeMap.props;
-      } else {
-        return typeMap.prop;
-      }
+      // if (this.rowProps) {
+      return typeMap.props;
+      // } else {
+      //   return typeMap.prop;
+      // }
     },
     /** 匹配关系 */
     getRowProps() {
-      if (this.type === this.typeMap.props) {
-        return {
-          ...this.rowProps
-        };
-      } else {
-        return {
-          value: this.rowProp,
-          label: this.rowProp
-        };
-      }
+      // if (this.type === this.typeMap.props) {
+      return {
+        ...this.rowProps
+      };
+      // } else {
+      //   return {
+      //     value: this.rowProp,
+      //     label: this.rowProp
+      //   };
+      // }
     }
   },
   mounted() {
@@ -282,56 +292,47 @@ export default {
     /** 处理数据 */
     initValue(value) {
       // 这个地方不光要解析value赋值给value_，还要解析出来selected需要的数据，因为多选删除的时候需要使用selected
-      if (this.type === this.typeMap.props) {
-        this.value_ = value;
-        if (this.multiple) {
-          this.selected = cloneDeep(value || []).map((ele) => {
-            return {
-              [this.getRowProps.value]: ele.value,
-              [this.getRowProps.label]: ele.label
-            };
-          });
-        } else {
-          this.selected = [
-            {
-              [this.getRowProps.value]: (value || {}).value,
-              [this.getRowProps.label]: (value || {}).label
-            }
-          ];
-        }
-      } else if (this.type === this.typeMap.prop) {
-        this.value_ = value;
-        if (this.multiple) {
-          this.selected = cloneDeep(value || []).map((ele) => {
-            return {
-              [this.getRowProps.value]: ele
-            };
-          });
-        } else {
-          this.selected = [
-            {
-              [this.getRowProps.value]: value
-            }
-          ];
-        }
+      // if (this.type === this.typeMap.props) {
+      this.value_ = value;
+      if (this.multiple) {
+        this.selected = cloneDeep(value || []).map((ele) => {
+          return {
+            [this.getRowProps.value]: ele.value,
+            [this.getRowProps.label]: ele.label
+          };
+        });
       } else {
-        this.value_ = value;
+        this.selected = [
+          {
+            [this.getRowProps.value]: (value || {}).value,
+            [this.getRowProps.label]: (value || {}).label
+          }
+        ];
       }
+      // } else if (this.type === this.typeMap.prop) {
+      //   this.value_ = value;
+      //   if (this.multiple) {
+      //     this.selected = cloneDeep(value || []).map((ele) => {
+      //       return {
+      //         [this.getRowProps.value]: ele
+      //       };
+      //     });
+      //   } else {
+      //     this.selected = [
+      //       {
+      //         [this.getRowProps.value]: value
+      //       }
+      //     ];
+      //   }
+      // } else {
+      //   this.value_ = value;
+      // }
     },
 
     /** 选择按钮点击事件 */
     check() {
       let flag = true;
-      // hooks相关逻辑后续要废除
-      if (this.hooks && this.hooks.beforeLoadData) {
-        let params = cloneDeep({
-          row: this.rowData,
-          column: this.column,
-          value: this.value_,
-          index: this.index
-        });
-        flag = this.hooks.beforeLoadData(params);
-      } else if (this.beforeOpen) {
+      if (this.beforeOpen) {
         let params = null;
         if (this.rowData) {
           params = {
@@ -350,95 +351,71 @@ export default {
 
     /** 弹窗确认事件  */
     openDialogConfirm(rows = []) {
-      // hooks相关逻辑后续要废除
-      if (this.hooks && this.hooks.confirm) {
-        let params = cloneDeep({
-          row: this.rowData,
-          column: this.column,
-          value: this.value,
-          index: this.index,
-          selections: rows
+      /**
+       * 这里现在的处理逻辑为单选时直接替换，多选时选择的值会直接push到原有的value中而不是直接覆盖原有的value，如果选择的值存在于value中，替换掉value的值
+       * 抛出给外面的事件时要抛出全量的value数据和row数据
+       */
+      let value = null;
+      let rows_ = cloneDeep(rows);
+      // if (this.type === this.typeMap.props) {
+      // 多选时只管数据新增，不管删除
+      if (this.multiple) {
+        value = cloneDeep(this.value_) || [];
+        rows_ = cloneDeep(this.selected);
+        rows.forEach((ele) => {
+          let index = this.selected.findIndex((e) => {
+            return e[this.getRowProps.value] === ele[this.getRowProps.value];
+          });
+
+          if (index === -1) {
+            value.push({
+              value: ele[this.getRowProps.value] || '',
+              label: ele[this.getRowProps.label] || ''
+            });
+            rows_.push(ele);
+          } else {
+            // 因为回显时自己组装的selected数据字段可能是不完整的，所以这里如果存在重复数据时，需要替换到原来不完整的数据
+            rows_[index] = ele;
+          }
         });
-        this.hooks.confirm(params, this.confirmCallBack);
       } else {
-        /**
-         * 这里现在的处理逻辑为单选时直接替换，多选时选择的值会直接push到原有的value中而不是直接覆盖原有的value，如果选择的值存在于value中，替换掉value的值
-         * 抛出给外面的事件时要抛出全量的value数据和row数据
-         */
-        let value = null;
-        let rows_ = cloneDeep(rows);
-        if (this.type === this.typeMap.props) {
-          // 多选时只管数据新增，不管删除
-          if (this.multiple) {
-            value = cloneDeep(this.value_) || [];
-            rows_ = cloneDeep(this.selected);
-            rows.forEach((ele) => {
-              let index = this.selected.findIndex((e) => {
-                return (
-                  e[this.getRowProps.value] === ele[this.getRowProps.value]
-                );
-              });
-
-              if (index === -1) {
-                value.push({
-                  value: ele[this.getRowProps.value] || '',
-                  label: ele[this.getRowProps.label] || ''
-                });
-                rows_.push(ele);
-              } else {
-                // 因为回显时自己组装的selected数据字段可能是不完整的，所以这里如果存在重复数据时，需要替换到原来不完整的数据
-                rows_[index] = ele;
-              }
-            });
-          } else {
-            if (rows.length > 0) {
-              value = {
-                value: (rows[0] || {})[this.getRowProps.value],
-                label: (rows[0] || {})[this.getRowProps.label]
-              };
-            } else {
-              value = null;
-            }
-          }
-        } else if (this.type === this.typeMap.prop) {
-          if (this.multiple) {
-            value = cloneDeep(this.value_);
-            rows_ = cloneDeep(this.selected);
-            rows.forEach((ele) => {
-              let index = this.selected.findIndex((e) => {
-                return (
-                  e[this.getRowProps.value] === ele[this.getRowProps.value]
-                );
-              });
-
-              if (index === -1) {
-                value.push(ele[this.getRowProps.value] || '');
-                rows_.push(ele);
-              } else {
-                // 因为回显时自己组装的selected数据字段可能是不完整的，所以这里如果存在重复数据时，需要替换到原来不完整的数据
-                rows_[index] = ele;
-              }
-            });
-          } else {
-            if (rows.length > 0) {
-              value = (rows[0] || {})[this.getRowProps.value];
-            } else {
-              value = null;
-            }
-          }
+        if (rows.length > 0) {
+          value = {
+            value: (rows[0] || {})[this.getRowProps.value],
+            label: (rows[0] || {})[this.getRowProps.label]
+          };
+        } else {
+          value = null;
         }
-        this.$emit('input', value);
-        this.emitChange(value, rows_);
       }
-      this.visible = false;
-    },
+      // } else if (this.type === this.typeMap.prop) {
+      //   if (this.multiple) {
+      //     value = cloneDeep(this.value_);
+      //     rows_ = cloneDeep(this.selected);
+      //     rows.forEach((ele) => {
+      //       let index = this.selected.findIndex((e) => {
+      //         return e[this.getRowProps.value] === ele[this.getRowProps.value];
+      //       });
 
-    /** 修改数据的回调 相关逻辑后续要废除
-     * 因为表格数据是没有双向绑定的，所以需要通过回调去设置数据
-     * @param{Object} row 需要重设成的值
-     */
-    confirmCallBack(row) {
-      this.$emit('change-row', row, this.index);
+      //       if (index === -1) {
+      //         value.push(ele[this.getRowProps.value] || '');
+      //         rows_.push(ele);
+      //       } else {
+      //         // 因为回显时自己组装的selected数据字段可能是不完整的，所以这里如果存在重复数据时，需要替换到原来不完整的数据
+      //         rows_[index] = ele;
+      //       }
+      //     });
+      //   } else {
+      //     if (rows.length > 0) {
+      //       value = (rows[0] || {})[this.getRowProps.value];
+      //     } else {
+      //       value = null;
+      //     }
+      //   }
+      // }
+      this.$emit('input', value);
+      this.emitChange(value, rows_);
+      this.visible = false;
     },
 
     /** 进入事件 */
@@ -448,9 +425,11 @@ export default {
 
     /** 退出事件 */
     mouseleave() {
-      if (!this.inputHovering1) {
-        this.inputHovering = false;
-      }
+      setTimeout(() => {
+        if (!this.inputHovering1) {
+          this.inputHovering = false;
+        }
+      }, 10);
     },
 
     /** 进入事件 */
@@ -460,8 +439,10 @@ export default {
 
     /** 退出事件 */
     mouseleave1() {
-      this.inputHovering1 = false;
-      this.inputHovering = false;
+      setTimeout(() => {
+        this.inputHovering1 = false;
+        this.inputHovering = false;
+      }, 10);
     },
 
     /** 处理组件大小改变事件 */
@@ -549,8 +530,6 @@ export default {
     /** 抛出change事件 */
     emitChange(val, rows) {
       // 内部不修改数据，让外部处理，内部只作为接收
-      // this.value_ = val;
-      // this.selected = rows;
       this.$emit('change', val, rows);
     },
 
@@ -588,7 +567,7 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.rd-select-dialog {
+.rd-dialog-select {
   position: relative;
   width: 100%;
   height: fit-content;
@@ -650,6 +629,14 @@ export default {
     }
   }
 
+  .tags-disabled {
+    background-color: #f5f7fa;
+    cursor: not-allowed;
+    .el-tag--info {
+      color: #c0c4cc;
+    }
+  }
+
   // &__value {
   //   position: absolute;
   //   width: calc(100% - 61px);
@@ -690,6 +677,12 @@ export default {
       width: $btnWidth;
       padding: 0;
       height: 30px;
+
+      &.is-disabled:hover {
+        border-color: transparent;
+        background-color: transparent;
+        color: inherit;
+      }
     }
   }
 }

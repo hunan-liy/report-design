@@ -579,9 +579,45 @@ export default {
     },
 
     /** 用于多选表格，切换某一行的选中状态，如果使用了第二个参数，则是设置这一行选中与否（selected 为 true 则选中） */
-    toggleRowSelection(index, selected) {
+    toggleRowSelection(row, selected) {
       let table = this.$refs['rdTable'];
-      table.toggleRowSelection(index, selected);
+      table.toggleRowSelection(row, selected);
+    },
+
+    /** 用于多选表格，切换某一行的选中状态，如果使用了第二个参数，则是设置这一行选中与否（selected 为 true 则选中） */
+    toggleRowSelectionByIndex(index, selected) {
+      let table = this.$refs['rdTable'];
+      table.toggleRowSelectionByIndex(index, selected);
+    },
+
+    /** 用于可展开表格与树形表格，切换某一行的展开状态，如果使用了第二个参数，则是设置这一行展开与否（expanded 为 true 则展开） */
+    toggleRowExpansion(row, selected) {
+      let table = this.$refs['rdTable'];
+      table.toggleRowExpansion(row, selected);
+    },
+
+    /** 用于可展开表格与树形表格，切换某一行的展开状态，如果使用了第二个参数，则是设置这一行展开与否（expanded 为 true 则展开） */
+    toggleRowExpansionByIndex(index, selected) {
+      let table = this.$refs['rdTable'];
+      table.toggleRowExpansionByIndex(index, selected);
+    },
+
+    /** 用于可展开表格与树形表格，切换所有行的展示状态 */
+    toggleAllRowExpans(selected) {
+      this.setRowExpans(selected);
+    },
+
+    /** 递归切换行的展示状态 */
+    setRowExpans(data, selected) {
+      let { treeProps = {} } = this.table_;
+      let { children } = treeProps || {};
+      data.forEach((row) => {
+        let table = this.$refs['rdTable'];
+        table.toggleRowExpansion(row, selected);
+        if (row[children] && row[children].length > 0) {
+          this.setRowExpans(row[children], selected);
+        }
+      });
     }
   },
   watch: {

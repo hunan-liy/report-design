@@ -587,12 +587,39 @@ export default {
     },
 
     /** 用于多选表格，切换某一行的选中状态，如果使用了第二个参数，则是设置这一行选中与否（selected 为 true 则选中） */
-    toggleRowSelection(index, selected) {
+    toggleRowSelection(row, selected) {
+      if (row) {
+        let table = this.$refs['el-table'];
+        table.toggleRowSelection(row, selected);
+      }
+    },
+
+    /** 用于多选表格，切换某一行的选中状态，如果使用了第二个参数，则是设置这一行选中与否（selected 为 true 则选中） */
+    toggleRowSelectionByIndex(index, selected) {
       this.$nextTick(() => {
         let row = this.tableData_[index];
         if (row) {
           let table = this.$refs['el-table'];
           table.toggleRowSelection(row, selected);
+        }
+      });
+    },
+
+    /** 用于可展开表格与树形表格，切换某一行的展开状态，如果使用了第二个参数，则是设置这一行展开与否（expanded 为 true 则展开） */
+    toggleRowExpansion(row, selected) {
+      if (row) {
+        let table = this.$refs['el-table'];
+        table.toggleRowExpansion(row, selected);
+      }
+    },
+
+    /** 用于可展开表格与树形表格，切换某一行的展开状态，如果使用了第二个参数，则是设置这一行展开与否（expanded 为 true 则展开） */
+    toggleRowExpansionByIndex(index, selected) {
+      this.$nextTick(() => {
+        let row = this.tableData_[index];
+        if (row) {
+          let table = this.$refs['el-table'];
+          table.toggleRowExpansion(row, selected);
         }
       });
     },
@@ -612,8 +639,8 @@ export default {
     },
 
     /** 获取表格数据 */
-    getTableData(){
-      return  cloneDeep(this.tableData_);
+    getTableData() {
+      return cloneDeep(this.tableData_);
     },
 
     /** 获取列样式 */
@@ -886,7 +913,11 @@ export default {
     // }
 
     ::v-deep {
+      // 单选模式时去掉列头选择框
       thead {
+        .multipleTable-radio .el-checkbox {
+          display: none;
+        }
         th {
           padding: 6px;
         }
@@ -904,11 +935,6 @@ export default {
         }
       }
     }
-  }
-
-  // 单选模式时去掉列头选择框
-  thead .multipleTable-radio .el-checkbox {
-    display: none;
   }
 
   // .hasChildren {

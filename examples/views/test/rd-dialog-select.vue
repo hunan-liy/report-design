@@ -1,17 +1,17 @@
 <template>
-  <rd-select-dialog
-    v-model="selectDialog"
+  <rd-dialog-select
+    v-model="dialogSelect"
     :reportConfig="reportConfig"
     :rowProps="rowProps"
-    @change="selectDialogChange"
+    @change="dialogSelectChange"
   >
-  </rd-select-dialog>
+  </rd-dialog-select>
 </template>
 <script>
 export default {
   data() {
     return {
-      selectDialog: {
+      dialogSelect: {
         value: 4,
         label: '卢军'
       },
@@ -78,15 +78,15 @@ export default {
           }
         ],
         httpConfig: {
-          url: 'https://www.fastmock.site/mock/de66cd0ff6569e78bb9857a0e42035f9/report-design/select-dialog'
+          url: 'https://www.fastmock.site/mock/de66cd0ff6569e78bb9857a0e42035f9/report-design/dialog-select'
         }
       }
       // test: { left:'200px'}
     };
   },
   methods: {
-    selectDialogChange(val, rows) {
-      console.log(val, this.selectDialog, rows);
+    dialogSelectChange(val, rows) {
+      console.log(val, this.dialogSelect, rows);
     }
   }
 };

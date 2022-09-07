@@ -100,9 +100,9 @@ export default {
           width: 100
         },
         {
-          type: 'selectDialog',
-          label: 'selectDialog',
-          prop: 'selectDialog',
+          type: 'dialogSelect',
+          label: 'dialogSelect',
+          prop: 'dialogSelect',
           props: {
             rowProps: {
               value: 'id',
@@ -167,7 +167,7 @@ export default {
                 }
               ],
               httpConfig: {
-                url: 'https://www.fastmock.site/mock/de66cd0ff6569e78bb9857a0e42035f9/report-design/select-dialog'
+                url: 'https://www.fastmock.site/mock/de66cd0ff6569e78bb9857a0e42035f9/report-design/dialog-select'
               }
             }
           },
@@ -209,7 +209,7 @@ export default {
           image: 'https://gd-hbimg.huaban.com/d0f717318df4aafaeb5e4707a9c6525c55dd7a4b6efd-pW1zUz_fw658',
           html: '<a href="https://www.baidu.com/" target="_blank">百度一下你就知道</a>',
           link: 'https://www.baidu.com/',
-          selectDialog: {
+          dialogSelect: {
             label: '陆芳',
             value: 2
           },
@@ -225,7 +225,7 @@ export default {
           image: 'http://qimg.hxnews.com/2017/0522/1495440192702.jpg',
           html: '<span>简单的一段文字</span>',
           link: '点击查看',
-          selectDialog: {
+          dialogSelect: {
             label: '卢军',
             value: 4
           },
@@ -241,7 +241,7 @@ export default {
           image: null,
           html: null,
           link: null,
-          selectDialog: null,
+          dialogSelect: null,
         },
         {
           id: 4,
@@ -254,7 +254,7 @@ export default {
           image: 'http://picapi.zhituad.com/photo/88/21/47BDF.jpg',
           html: '<i class="el-icon-edit"></i>',
           link: '详情',
-          selectDialog: {
+          dialogSelect: {
             label: '丁洋',
             value: 8
           },
@@ -310,8 +310,10 @@ export default {
     return {
       tableColumns: [
         {
+          type: 'text',
           label: '姓名',
           prop: 'userName',
+          ellipsis: 2,
         },
         {
           label: '年龄',
@@ -391,7 +393,7 @@ export default {
           "birthday": "1982-11-05",
           "email": "s.ylverdbkr@mlcxkb.cc",
           "address": "新和县",
-          "userName": "武芳"
+          "userName": "测试比较长长长长长长长长长长长长长长长长长长长长长的文字"
         },
         {
           "id": 2,
@@ -1197,7 +1199,7 @@ export default {
 - value 点击元素的值
 - index 点击的元素所对应的行下标
 - row 点击元素所对应的行数据
-- rows 列的type为selectDailog时才会有，表示selectDialog弹窗确定是弹窗中选中的行数据
+- rows 列的type为selectDailog时才会有，表示dialogSelect弹窗确定是弹窗中选中的行数据
 
 #### row-item-click 行内元素点击事件，只支持部分type
 - type 当前点击元素的类型
@@ -1205,18 +1207,21 @@ export default {
 - index 点击的元素所对应的行下标
 - row 点击元素所对应的行数据
 - value 点击元素的值
-- rows 列的type为selectDailog时才会有，表示selectDialog弹窗确定是弹窗中选中的行数据
+- rows 列的type为selectDailog时才会有，表示dialogSelect弹窗确定是弹窗中选中的行数据
 - clickItem 当前点击的对象
   - label 点击的按钮的label
   - prop 点击的按钮的prop
 
-### Form Methods
-| 方法名             | 说明                                                | 参数            |
-| ------------------ | --------------------------------------------------- | --------------- |
-| doLayout           | 对 Table 进行重新布局                               | -               |
-| toggleRowSelection | 重写了table的toggleRowSelection，第一个参数为行下标 | index, selected |
-| clearSelection     | 用于多选表格，清空用户的选择                        | -               |
-| getTableData       | 获取表格数据                                        | -               |
+### Table Methods
+| 方法名                    | 说明                                                                                                                           | 参数            |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | --------------- |
+| doLayout                  | 对 Table 进行重新布局                                                                                                          | -               |
+| clearSelection            | 用于多选表格，清空用户的选择                                                                                                   | -               |
+| getTableData              | 获取表格数据                                                                                                                   | -               |
+| toggleRowSelection        | 用于多选表格，切换某一行的选中状态，如果使用了第二个参数，则是设置这一行选中与否（selected 为 true 则选中）                    | row, selected   |
+| toggleRowSelectionByIndex | 重写了table的toggleRowSelection，第一个参数为行下标（因为内部数据用深拷贝进行了隔离，所以只能用下标去获取内部数据的row再设置） | index, selected |
+| toggleRowExpansion        | 用于可展开表格与树形表格，切换某一行的展开状态，如果使用了第二个参数，则是设置这一行展开与否（expanded 为 true 则展开）        | row, selected   |
+| toggleRowExpansionByIndex | 重写了table的toggleRowExpansion，第一个参数为行下标（因为内部数据用深拷贝进行了隔离，所以只能用下标去获取内部数据的row再设置） | index, selected |
 
 
 ### Slot
@@ -1299,7 +1304,7 @@ export default {
 | filter-multiple  | 数据过滤的选项是否多选                                                                                                                                                                | boolean                                 | —                                                                                                 | true                              |
 | filter-method    | 数据过滤使用的方法，如果是多选的筛选项，对每一条数据会执行多次，任意一次返回 true 就会显示                                                                                            | Function(value, row, column)            | —                                                                                                 | —                                 |
 | filtered-value   | 选中的数据过滤项，如果需要自定义表头过滤的渲染方式，可能会需要此属性                                                                                                                  | Array                                   | —                                                                                                 | —                                 |
-| type             | 表格列类型，重写了type                                                                                                                                                                | string                                  | —，text，input，inputNumber，select，checkbox，switch，image，html，link，selectDialog，operation |
+| type             | 表格列类型，重写了type                                                                                                                                                                | string                                  | —，text，input，inputNumber，select，checkbox，switch，image，html，link，dialogSelect，operation |
 | slotName         | 当type为slot时，使用插槽的名称，默认取TableColumns的prop                                                                                                                              | string                                  | —                                                                                                 | —                                 |
 | headerSlotName   | lable部分使用插槽时，插槽的名称                                                                                                                                                       | string                                  | —                                                                                                 | —                                 |
 | props            | 各个类型自身的Attributes属性                                                                                                                                                          | object                                  | —                                                                                                 | —                                 |
@@ -1323,11 +1328,11 @@ export default {
 | readonly    | 是否开启只读模式。若设置为 true，大部分表单元素变为text，部分变为disabled效 | boolean                                        | — | false |
 
 
-### TableColumns type='selectDialog' props
+### TableColumns type='dialogSelect' props
 | 方法名       | 说明                                                             | 参数                                           |
 | ------------ | ---------------------------------------------------------------- | ---------------------------------------------- |
-| ...          | RdSelectDialog 选择器 Attributes属性                             | —                                              | — | — |
-| reportConfig | 可以是对象也可以是个函数，方便动态赋值设置列中每个RdSelectDialog | object/Function(row, column, cellValue, index) |
+| ...          | RdDialogSelect 选择器 Attributes属性                             | —                                              | — | — |
+| reportConfig | 可以是对象也可以是个函数，方便动态赋值设置列中每个RdDialogSelect | object/Function(row, column, cellValue, index) |
 
 ### TableColumns type='image' props
 | 方法名 | 说明                         | 类型   | 可选值 | 默认值 |

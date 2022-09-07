@@ -1,66 +1,68 @@
 <template>
-  <el-form
-    :model="forms"
-    ref="dataForm"
-    v-bind="config_"
-    @validate="formValidate"
-  >
-    <div class="form-wrap">
-      <el-row>
-        <template v-for="(formItem, index) in formList">
-          <el-col
-            v-show="!getHidden(formItem)"
-            :key="'col' + index"
-            v-bind="colConfig(formItem)"
-          >
-            <template
-              v-if="formItem.type === 'slot' && formItem.slotType === 'item'"
+  <div class="rd-form">
+    <el-form
+      :model="forms"
+      ref="dataForm"
+      v-bind="config_"
+      @validate="formValidate"
+    >
+      <div class="form-wrap">
+        <el-row>
+          <template v-for="(formItem, index) in formList">
+            <el-col
+              v-show="!getHidden(formItem)"
+              :key="'col' + index"
+              v-bind="colConfig(formItem)"
             >
-              <slot
-                :name="formItem.slotName"
-                :value="forms[formItem.prop]"
-                :formItem="formItem"
-                :dropList="getDropList(formItem)"
-              />
-            </template>
-            <template v-else>
-              <div class="form-item">
-                <el-form-item
-                  v-bind="formItem"
-                  :label="formItem.label"
-                  :prop="formItem.prop"
-                >
-                  <template slot="label">
-                    <div class="form-item-label">
-                      <div class="ellipsis" :title="formItem.label">
-                        {{ formItem.label }}
-                      </div>
-                    </div>
-                  </template>
-                  <form-item
-                    :formItem="formItem"
-                    :forms="forms"
-                    :dropList="dropList"
-                    :config="config_"
-                    @change="formItemChange"
+              <template
+                v-if="formItem.type === 'slot' && formItem.slotType === 'item'"
+              >
+                <slot
+                  :name="formItem.slotName"
+                  :value="forms[formItem.prop]"
+                  :formItem="formItem"
+                  :dropList="getDropList(formItem)"
+                />
+              </template>
+              <template v-else>
+                <div class="form-item">
+                  <el-form-item
+                    v-bind="formItem"
+                    :label="formItem.label"
+                    :prop="formItem.prop"
                   >
-                    <template v-if="formItem.type === 'slot'">
-                      <slot
-                        :name="formItem.slotName"
-                        :value="forms[formItem.prop]"
-                        :formItem="formItem"
-                        :dropList="getDropList(formItem)"
-                      />
+                    <template slot="label">
+                      <div class="form-item-label">
+                        <div class="ellipsis" :title="formItem.label">
+                          {{ formItem.label }}
+                        </div>
+                      </div>
                     </template>
-                  </form-item>
-                </el-form-item>
-              </div>
-            </template>
-          </el-col>
-        </template>
-      </el-row>
-    </div>
-  </el-form>
+                    <form-item
+                      :formItem="formItem"
+                      :forms="forms"
+                      :dropList="dropList"
+                      :config="config_"
+                      @change="formItemChange"
+                    >
+                      <template v-if="formItem.type === 'slot'">
+                        <slot
+                          :name="formItem.slotName"
+                          :value="forms[formItem.prop]"
+                          :formItem="formItem"
+                          :dropList="getDropList(formItem)"
+                        />
+                      </template>
+                    </form-item>
+                  </el-form-item>
+                </div>
+              </template>
+            </el-col>
+          </template>
+        </el-row>
+      </div>
+    </el-form>
+  </div>
 </template>
 <script>
 import { cloneDeep } from 'lodash';
@@ -189,7 +191,7 @@ export default {
         if (!props || (props && !props.placeholder)) {
           let selectType = [
             'select',
-            'selectDialog',
+            'dialogSelect',
             'cascader',
             'timePicker',
             'datePicker'
@@ -536,6 +538,9 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+.rd-form {
+  width: 100%;
+}
 .form-wrap {
   width: 100%;
 

@@ -232,23 +232,23 @@
     :disabled="isDisabled"
     @change="change()"
   ></el-transfer>
-  <!-- SelectDialog 业务对话框 -->
+  <!-- DialogSelect 业务对话框 -->
   <div
-    v-else-if="formItem.type === 'selectDialog'"
+    v-else-if="formItem.type === 'dialogSelect'"
     class="el-form-item-content padding0"
   >
     <template v-if="readonly">
-      <span class="padding">{{ getSelectDialogLabel }}</span>
+      <span class="padding">{{ getDialogSelectLabel }}</span>
     </template>
-    <rd-select-dialog
+    <rd-dialog-select
       v-else
       v-model="forms_[prop]"
       v-bind="formProps"
       :disabled="isDisabled"
       class="deep"
-      @change="selectDialogChange"
+      @change="dialogSelectChange"
     >
-    </rd-select-dialog>
+    </rd-dialog-select>
   </div>
   <!-- Upload 上传组件 -->
   <!-- <div
@@ -390,7 +390,7 @@ export default {
       return label.join('，');
     },
 
-    getSelectDialogLabel() {
+    getDialogSelectLabel() {
       let label = '';
       let value = this.forms[this.prop];
       if (value && typeof value === 'object') {
@@ -410,8 +410,8 @@ export default {
       });
     },
 
-    /** selectDialog的change事件 */
-    selectDialogChange(value, rows) {
+    /** dialogSelect的change事件 */
+    dialogSelectChange(value, rows) {
       this.$emit('change', {
         prop: this.prop,
         value: this.forms_[this.prop],

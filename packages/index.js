@@ -10,10 +10,10 @@ import RdDialog from './rd-dialog';
 import RdForm from './rd-form';
 import RdTable from './rd-table';
 import RdReport from './rd-report';
-import RdSelectDialog from './rd-select-dialog';
+import RdDialogSelect from './rd-dialog-select';
 
 // 存储组件列表
-const components = [RdDialog, RdForm, RdTable, RdReport, RdSelectDialog];
+const components = [RdDialog, RdForm, RdTable, RdReport, RdDialogSelect];
 
 // 定义 install 方法，接收 Vue 作为参数。如果使用 use 注册插件，则所有的组件都将被注册
 const install = function (Vue) {

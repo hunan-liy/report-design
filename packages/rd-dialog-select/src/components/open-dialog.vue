@@ -4,11 +4,10 @@
     :visible.sync="dialogVisible"
     :close-on-click-modal="false"
     :append-to-body="true"
-    fullscreen
     custom-class="form-open-dialog"
     @confirm="confirm"
   >
-    <div class="dialog-body">
+    <div class="dialog-body" :style="{ height: boxHeight }">
       <rd-report
         v-if="dialogVisible"
         ref="rdReport"
@@ -76,14 +75,15 @@ export default {
       boxHeight: null
     };
   },
-  mounted() {
-    // this.initHeight();
+  created() {
+    this.initHeight();
   },
+  mounted() {},
   methods: {
     /** 初始化内容高度 */
     initHeight() {
-      let height = document.body.clientHeight;
-      this.boxHeight = height * 0.5 + 'px';
+      let height = document.documentElement.clientHeight;
+      this.boxHeight = height * 0.7 - 80 + 'px';
     },
 
     /** 初始化配置 */
@@ -101,7 +101,19 @@ export default {
         multipleTable = true;
       }
 
-      this.filters = filters;
+      // 初始化filters
+      let { config = {} } = filters;
+      let { col = 12 } = config || {};
+
+      config = {
+        col,
+        ...config
+      };
+
+      this.filters = {
+        ...filters,
+        config
+      };
       this.headers = headers;
       this.table = {
         multipleTable,
@@ -195,37 +207,37 @@ export default {
             });
 
             if (index_ > -1) {
-              this.$refs.rdReport.toggleRowSelection(index, true);
+              this.$refs.rdReport.toggleRowSelectionByIndex(index, true);
             }
           });
         } else {
-          if (this.type === this.typeMap.props) {
-            if (
-              (this.value_ || {}).value !== undefined &&
-              (this.value_ || {}).value !== null &&
-              (this.value_ || {}).value !== ''
-            ) {
-              data.forEach((row, index) => {
-                let value = row[this.rowProps.value];
-                if (value === (this.value_ || {}).value) {
-                  this.$refs.rdReport.toggleRowSelection(index, true);
-                }
-              });
-            }
-          } else {
-            if (
-              this.value_ !== undefined &&
-              this.value_ !== null &&
-              this.value_ !== ''
-            ) {
-              data.forEach((row, index) => {
-                let value = row[this.rowProps.value];
-                if (value === this.value_) {
-                  this.$refs.rdReport.toggleRowSelection(index, true);
-                }
-              });
-            }
+          // if (this.type === this.typeMap.props) {
+          if (
+            (this.value_ || {}).value !== undefined &&
+            (this.value_ || {}).value !== null &&
+            (this.value_ || {}).value !== ''
+          ) {
+            data.forEach((row, index) => {
+              let value = row[this.rowProps.value];
+              if (value === (this.value_ || {}).value) {
+                this.$refs.rdReport.toggleRowSelectionByIndex(index, true);
+              }
+            });
           }
+          // } else {
+          //   if (
+          //     this.value_ !== undefined &&
+          //     this.value_ !== null &&
+          //     this.value_ !== ''
+          //   ) {
+          //     data.forEach((row, index) => {
+          //       let value = row[this.rowProps.value];
+          //       if (value === this.value_) {
+          //         this.$refs.rdReport.toggleRowSelection(index, true);
+          //       }
+          //     });
+          //   }
+          // }
         }
         // }
       });
@@ -258,12 +270,15 @@ export default {
 
 .dialog-body {
   width: 100%;
-  height: 100%;
 }
 
 ::v-deep {
   .el-dialog__body {
     padding: 0 10px !important;
+
+    .filters .filters-box {
+      max-height: 200px;
+    }
   }
 }
 </style>

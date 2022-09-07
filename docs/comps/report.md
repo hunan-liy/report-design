@@ -893,7 +893,7 @@ export default {
 | 事件名称         | 说明                                                                                                                     | 回调参数                 |
 | ---------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------ |
 | loadData         | 加载数据时触发                                                                                                           | params（请求参数）       |
-| loadSuccess      | 接口加载完成之后触发                                                                                                     | tableData       |
+| loadSuccess      | 接口加载完成之后触发                                                                                                     | tableData                |
 | reset            | 重置按钮点击事件                                                                                                         | —                        |
 | header-click     | 表格头部按钮点击事件                                                                                                     | params                   |
 | selection-change | 当选择项发生变化时会触发该事件                                                                                           | —                        |
@@ -923,7 +923,7 @@ export default {
 - value 点击元素的值
 - index 点击的元素所对应的行下标
 - row 点击元素所对应的行数据
-- rows 列的type为selectDailog时才会有，表示selectDialog弹窗确定是弹窗中选中的行数据
+- rows 列的type为selectDailog时才会有，表示dialogSelect弹窗确定是弹窗中选中的行数据
 
 #### row-item-click 行内元素点击事件，只支持部分type
 - type 当前点击元素的类型
@@ -931,20 +931,25 @@ export default {
 - index 点击的元素所对应的行下标
 - row 点击元素所对应的行数据
 - value 点击元素的值
-- rows 列的type为selectDailog时才会有，表示selectDialog弹窗确定是弹窗中选中的行数据
+- rows 列的type为selectDailog时才会有，表示dialogSelect弹窗确定是弹窗中选中的行数据
 - clickItem 当前点击的对象
   - label 点击的按钮的label
   - prop 点击的按钮的prop
 
 ### Methods
-| 方法名             | 说明                                                                                                        | 参数            |
-| ------------------ | ----------------------------------------------------------------------------------------------------------- | --------------- |
-| loadData           | 刷新数据                                                                                                    | —               |
-| initHeight         | 刷新页面布局高度                                                                                            | —               |
-| getRequestParams   | 获取组装完成后的接口请求参数                                                                                | —               |
-| getTableData       | 获取表格数据                                                                                                | —               |
-| clearSelection     | 用于多选表格，清空用户的选择                                                                                | —               |
-| toggleRowSelection | 用于多选表格，切换某一行的选中状态，如果使用了第二个参数，则是设置这一行选中与否（selected 为 true 则选中） | index, selected |
+| 方法名                    | 说明                                                                                                                           | 参数            |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | --------------- |
+| loadData                  | 刷新数据                                                                                                                       | —               |
+| initHeight                | 刷新页面布局高度                                                                                                               | —               |
+| getRequestParams          | 获取组装完成后的接口请求参数                                                                                                   | —               |
+| getTableData              | 获取表格数据                                                                                                                   | —               |
+| clearSelection            | 用于多选表格，清空用户的选择                                                                                                   | —               |
+|                           |
+| toggleRowSelection        | 用于多选表格，切换某一行的选中状态，如果使用了第二个参数，则是设置这一行选中与否（selected 为 true 则选中）                    | row, selected   |
+| toggleRowSelectionByIndex | 重写了table的toggleRowSelection，第一个参数为行下标（因为内部数据用深拷贝进行了隔离，所以只能用下标去获取内部数据的row再设置） | index, selected |
+| toggleRowExpansion        | 用于可展开表格与树形表格，切换某一行的展开状态，如果使用了第二个参数，则是设置这一行展开与否（expanded 为 true 则展开）        | row, selected   |
+| toggleRowExpansionByIndex | 重写了table的toggleRowExpansion，第一个参数为行下标（因为内部数据用深拷贝进行了隔离，所以只能用下标去获取内部数据的row再设置） | index, selected |
+| toggleAllRowExpans        | 用于可展开表格与树形表格，切换所有行的展示状态                                                                                 | selected        |
 
 
 ### Slot

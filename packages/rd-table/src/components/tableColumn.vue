@@ -1,7 +1,8 @@
 <template>
   <!-- Text 文本类型 -->
   <div v-if="type === 'text'" class="rd-table-column" :style="getTextStyle">
-    <el-tooltip v-if="column.ellipsis" :content="formatValue" placement="top">
+    <el-tooltip v-if="column.ellipsis" placement="top">
+      <div slot="content" class="tooltip-content">{{ formatValue }}</div>
       <div class="rd-ellipsis" @click="click">{{ formatValue }}</div>
     </el-tooltip>
     <span v-else @click="click">{{ formatValue }}</span>
@@ -114,12 +115,12 @@
       {{ formatValue }}
     </div>
   </div>
-  <!-- SelectDialog 开窗选择 -->
-  <div v-else-if="type === 'selectDialog'" class="rd-table-column">
+  <!-- DialogSelect 弹窗选择器 -->
+  <div v-else-if="type === 'dialogSelect'" class="rd-table-column">
     <template v-if="readonly">
       <span>{{ value }}</span>
     </template>
-    <rd-select-dialog
+    <rd-dialog-select
       v-else
       :value="value"
       v-bind="props"
@@ -131,9 +132,9 @@
       :rowData="row"
       :column="scope.column"
       :index="scope.$index"
-      @change="selectDialogChange"
+      @change="dialogSelectChange"
     >
-    </rd-select-dialog>
+    </rd-dialog-select>
   </div>
   <!-- Operation 操作列 -->
   <div v-else-if="type === 'operation'" class="rd-table-column">
@@ -329,7 +330,7 @@ export default {
       return label.join('，');
     },
 
-    /** selectDialog 配置 */
+    /** dialogSelect 配置 */
     reportConfig() {
       let { reportConfig } = this.props;
 
@@ -367,8 +368,8 @@ export default {
       });
     },
 
-    /** selectDialog的change事件 */
-    selectDialogChange(value, rows) {
+    /** dialogSelect的change事件 */
+    dialogSelectChange(value, rows) {
       let { $index } = this.scope;
       this.$emit('change', {
         prop: this.prop,
@@ -439,7 +440,7 @@ export default {
     cursor: pointer;
   }
 
-  .selectDialog {
+  .dialogSelect {
     position: relative;
     .el-button {
       padding-left: 10px;
@@ -473,5 +474,11 @@ export default {
       width: 100%;
     }
   }
+}
+.tooltip-content {
+  max-width: 505px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 3px 0;
 }
 </style>
