@@ -1,4 +1,2 @@
 const ReportDesign = require('./report-design');
-module.exports = {
-  '/comps/': ReportDesign,
-};
+module.exports = ReportDesign;

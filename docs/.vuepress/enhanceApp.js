@@ -18,8 +18,8 @@ export default ({
         ReportDesign = require('@packages/index').default;
 
         // 使用打包后的组件
-        // ElComponent = require('@lib/jUI.umd.min').default;
-        // import('@lib/jUI.css');
+        // ReportDesign = require('@lib/ReportDesign.umd.min').default;
+        // import('@lib/ReportDesign.css');
       }
       
       ReportDesign.init({

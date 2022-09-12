@@ -1,5 +1,6 @@
 <template>
   <el-dialog
+    ref="dialog"
     v-bind="_props"
     class="rd-dialog"
     :style="{
@@ -18,12 +19,9 @@
     <template slot="footer">
       <span class="dialog-footer">
         <slot name="footer">
-          <el-button
-            v-if="showCancelButton"
-            size="small"
-            @click="cancel"
-            >{{ cancelButtonText }}</el-button
-          >
+          <el-button v-if="showCancelButton" size="small" @click="cancel">{{
+            cancelButtonText
+          }}</el-button>
           <el-button
             v-if="showConfirmButton"
             type="primary"
@@ -180,9 +178,10 @@ export default {
      * TODO 取消按钮也可以抛出取消事件，暂时没有这个需求，就未做处理
      */
     cancel() {
-      this.$emit('update:visible', false);
+      // this.$emit('update:visible', false);
+      // this.close();
       this.$emit('cancel');
-      this.close();
+      this.$refs.dialog.handleClose();
     }
   }
 };

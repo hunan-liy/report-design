@@ -462,6 +462,12 @@ export default {
   word-break: break-all;
 }
 
+.el-radio-group,.el-checkbox-group {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
 .el-radio {
   line-height: 20px;
 }

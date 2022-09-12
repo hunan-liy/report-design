@@ -22,6 +22,7 @@ module.exports = {
   ],
   chainWebpack(config) {
     config.resolve.alias.set('@packages', './../../packages');
+    config.resolve.alias.set('@lib', './../../lib');
   },
   markdown: markdown
 };

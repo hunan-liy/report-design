@@ -110,13 +110,13 @@ export default {
         radio: {
           type: 'radio',
           label: 'radio',
-          col: 24,
+          col: 12,
           required: true,
         },
         checkbox: {
           type: 'checkbox',
           label: 'checkbox',
-          col: 24,
+          col: 12,
           required: true,
         },
         inputNumber: {
@@ -489,6 +489,66 @@ export default {
 ```
 :::
 
+### 自适应布局
+可以通过配置config.layout=felx开启，这种模式下单行只有一个元素时会占满一行
+改变页面宽度来测试效果
+:::demo 
+```html
+<rd-form
+  ref="rdForm"
+  :config="config"
+  :formConfig="formConfig"
+>
+</rd-form>
+<script>
+  export default {
+    data() {
+      return {
+        config: {
+          layout: 'flex',
+        },
+        formConfig: {
+          userName: {
+            type: 'input',
+            label: '姓名',
+            col: 10
+          },
+          age: {
+            type: 'input',
+            label: '年龄',
+            col: 14
+          },
+          sex: {
+            type: 'input',
+            label: '性别',
+          },
+          email: {
+            type: 'input',
+            label: '邮箱',
+          },
+          address: {
+            type: 'input',
+            label: '地址',
+            col: 12
+          },
+          class: {
+            type: 'input',
+            label: '分类',
+            width: '80%'
+          },
+          mark: {
+            type: 'input',
+            label: '成绩',
+            width: '400px'
+          }
+        }
+      };
+    },
+  };
+</script>
+```
+:::
+
 ### 使用element-ui原生属性
 通过props设置element-ui的原生属性，基本兼容全部属性
 :::demo 
@@ -826,6 +886,7 @@ export default {
 | show-message            | 是否显示校验错误信息                                                                                                                                  | boolean | —                     | true   |
 | validate-on-rule-change | 是否在 rules 属性改变后立即触发一次验证                                                                                                               | boolean | —                     | true   |
 | col                     | 表单元素大小，通过24分栏去控制每个元素的大小和位置                                                                                                    | number  | —                     | —      |
+| layout                  | 布局方式，layout=flex时启用自适应布局，form-item默认最小宽度为300px                                                                                   | string  | —/flex                | —      |
 | size                    | 用于控制该表单内组件的尺寸                                                                                                                            | string  | medium / small / mini | small  |
 | disabled                | 是否禁用该表单内的所有组件。若设置为 true，则表单内组件上的 disabled 属性不再生效                                                                     | boolean | —                     | false  |
 | readonly                | 是否开启只读模式。若设置为 true，大部分表单元素变为text，部分变为disabled，Transfer还未生效                                                           | boolean | —                     | false  |

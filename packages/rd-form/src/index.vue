@@ -6,7 +6,7 @@
       v-bind="config_"
       @validate="formValidate"
     >
-      <div class="form-wrap">
+      <div class="form-wrap" :class="layout === 'flex' ? 'layout-felx' : ''">
         <el-row>
           <template v-for="(formItem, index) in formList">
             <el-col
@@ -128,6 +128,14 @@ export default {
   computed: {
     visible_() {
       return this.visible && this.visible();
+    },
+    layout() {
+      let layout = (
+        window.$ReportDesign.layout || (this.config_ && this.config_.layout)
+      )
+      console.log('------layout--', layout);
+      
+      return layout;
     }
   },
   methods: {
@@ -164,6 +172,7 @@ export default {
           type,
           label,
           col,
+          minWidth,
           slotName,
           propGroup = [],
           hidden,
@@ -184,6 +193,11 @@ export default {
           } else {
             col = 12;
           }
+        }
+
+        // layout=flex的模式下默认最小宽度为300px
+        if(this.layout === 'flex' && !minWidth){
+          minWidth = '300px';
         }
 
         // 内置处理placeholder
@@ -288,6 +302,7 @@ export default {
           ...ele,
           prop,
           col,
+          minWidth,
           hidden,
           props: {
             placeholder,
@@ -342,6 +357,15 @@ export default {
       } else {
         col = {
           span: item.col
+        };
+      }
+      if (item.minWidth) {
+        col = {
+          ...col,
+          style: {
+            ...col.style,
+            minWidth: item.minWidth
+          }
         };
       }
       return col;
@@ -586,6 +610,25 @@ export default {
       flex: 1;
       margin-left: 0 !important;
     }
+  }
+}
+/** 自适应布局 */
+.layout-felx {
+  .el-row {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  [class*='el-col-'] {
+    flex: 1 1 auto;
+    display: flex;
+  }
+
+  .form-item {
+    flex: 1;
+  }
+
+  .el-form-item {
+    height: 100%;
   }
 }
 </style>

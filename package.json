@@ -1,11 +1,15 @@
 {
-  "name": "test1",
-  "version": "0.1.0",
-  "private": true,
+  "name": "report-design",
+  "version": "1.0.1",
+  "private": false,
+  "main": "lib/ReportDesign.umd.min.js",
+  "description": "表单设计器",
+  "keyword": "report-design",
   "scripts": {
     "docs:dev": "vuepress dev docs",
     "docs:build": "vuepress build docs",
     "serve": "vue-cli-service serve",
+    "lib": "vue-cli-service build --target lib --name ReportDesign --dest lib packages/index.js",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },

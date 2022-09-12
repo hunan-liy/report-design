@@ -12,8 +12,8 @@ module.exports = [
     title: '开发指南',
     collapsable: false,
     children: [
-      // { title: '安装', path: getPath('installation'), collapsable: false },
-      // { title: '快速上手', path: getPath('quickstart'), collapsable: false },
+      { title: '介绍', path: '/', collapsable: false },
+      { title: '快速开始', path: getPath(''), collapsable: false },
       // { title: '国际化', path: getPath('i18n'), collapsable: false },
       // { title: '自定义主题', path: getPath('custom-theme'), collapsable: false },
       // { title: '内置过渡动画', path: getPath('transition'), collapsable: false },
