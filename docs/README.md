@@ -10,4 +10,6 @@ ReportDesign是一款基于ElementUI二次开发的Vue组件库
 
 比较适用于管理后台系统和低代码平台
 
+如果感觉还可以，请给作者在[github](https://github.com/hunan-liy/report-design)上点个[star](https://github.com/hunan-liy/report-design)
 
+如果有任何疑问也可以联系作者QQ：675506147
