@@ -20,22 +20,205 @@ export default {
     return {
       config: {
         labelWidth: '200px',
-        labelSuffix: '123',
+        labelSuffix: '123'
         // hideRequiredAsterisk: true,
         // showMessage: false,
         // disabled: true,
         // readonly: true
       },
       formConfig: {
+        id: {
+          hidden: true
+        },
+        text: {
+          label: 'text'
+        },
         input: {
           type: 'input',
           label: 'input',
-          // showMessage: false,
+          required: true
+        },
+        inputSuffixes: {
+          type: 'inputSuffixes',
+          label: 'inputSuffixes',
+          suffixes: '<i class="el-icon-share"></i>'
+        },
+        dialogSelect: {
+          type: 'dialogSelect',
+          label: 'dialogSelect',
           props: {
-            type: 'textarea',
-            rows: 8
+            rowProps: {
+              value: 'id',
+              label: 'userName'
+            },
+            reportConfig: {
+              filters: {
+                formConfig: {
+                  typeCode: {
+                    type: 'input',
+                    label: '姓名'
+                  },
+                  typeName: {
+                    type: 'input',
+                    label: '年龄'
+                  },
+                  typeCode1: {
+                    type: 'select',
+                    label: '性别'
+                  },
+                  typeName1: {
+                    type: 'select',
+                    label: '生日'
+                  },
+                  typeCode2: {
+                    type: 'input',
+                    label: '邮箱'
+                  },
+                  typeName2: {
+                    type: 'select',
+                    label: '地址'
+                  }
+                },
+                dropList: {
+                  typeName: []
+                }
+              },
+              tableColumns: [
+                {
+                  label: '姓名',
+                  prop: 'userName'
+                },
+                {
+                  label: '年龄',
+                  prop: 'age'
+                },
+                {
+                  label: '性别',
+                  prop: 'sex'
+                },
+                {
+                  label: '生日',
+                  prop: 'birthday'
+                },
+                {
+                  label: '邮箱',
+                  prop: 'email'
+                },
+                {
+                  label: '地址',
+                  prop: 'address'
+                }
+              ],
+              httpConfig: {
+                url: 'https://www.fastmock.site/mock/de66cd0ff6569e78bb9857a0e42035f9/report-design/dialog-select'
+              }
+            }
           },
           required: true
+        },
+        radio: {
+          type: 'radio',
+          label: 'radio',
+          col: 12,
+          required: true
+        },
+        checkbox: {
+          type: 'checkbox',
+          label: 'checkbox',
+          col: 12,
+          required: true
+        },
+        inputNumber: {
+          type: 'inputNumber',
+          label: 'inputNumber',
+          required: true
+        },
+        select: {
+          type: 'select',
+          label: 'select',
+          required: true
+        },
+        cascader: {
+          type: 'cascader',
+          label: 'cascader',
+          required: true
+        },
+        switch: {
+          type: 'switch',
+          label: 'switch'
+        },
+        slider: {
+          type: 'slider',
+          label: 'slider',
+          col: 24,
+          required: true
+        },
+        timePicker: {
+          type: 'timePicker',
+          label: 'timePicker',
+          required: true
+        },
+        datePicker: {
+          type: 'datePicker',
+          label: 'datePicker',
+          propGroup: ['datePicker1', 'datePicker2'],
+          props: {
+            type: 'daterange',
+            startPlaceholder: '开始日期',
+            endPlaceholder: '结束日期'
+          },
+          col: 24,
+          required: true
+        },
+        rate: {
+          type: 'rate',
+          label: 'rate',
+          required: true
+        },
+        colorPicker: {
+          type: 'colorPicker',
+          label: 'colorPicker',
+          required: true
+        },
+        transfer: {
+          type: 'transfer',
+          label: 'transfer',
+          col: 24,
+          props: {
+            data: [
+              {
+                key: 1,
+                label: '备选项1'
+              },
+              {
+                key: 2,
+                label: '备选项2'
+              },
+              {
+                key: 3,
+                label: '备选项3'
+              },
+              {
+                key: 4,
+                label: '备选项4',
+                disabled: true
+              },
+              {
+                key: 5,
+                label: '备选项5'
+              }
+            ]
+          }
+        },
+        textarea: {
+          type: 'input',
+          label: '备注',
+          col: 24,
+          props: {
+            type: 'textarea',
+            rows: 4,
+            placeHolder: '请输入备注'
+          }
         }
       },
       // 设置初始值

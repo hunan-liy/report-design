@@ -29,6 +29,7 @@ const install = function (Vue) {
 };
 
 // 初始化设置全局配置 (待完善)
+window.$ReportDesign = {};
 const init = function (obj) {
   let $ReportDesign = window.$ReportDesign ? window.$ReportDesign : {};
   window.$ReportDesign = {

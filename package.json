@@ -1,8 +1,8 @@
 {
   "name": "report-design",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "private": false,
-  "main": "lib/ReportDesign.umd.min.js",
+  "main": "packages/index.js",
   "description": "表单设计器",
   "keyword": "report-design",
   "scripts": {

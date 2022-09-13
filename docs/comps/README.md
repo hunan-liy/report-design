@@ -22,7 +22,7 @@ import ReportDesign from 'report-design';
 import 'report-design/lib/ReportDesign.css';
 import App from './App.vue';
 
-Vue.use(ElementUI);
+Vue.use(ReportDesign);
 
 new Vue({
   el: '#app',

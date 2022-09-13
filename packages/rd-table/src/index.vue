@@ -605,6 +605,12 @@ export default {
       });
     },
 
+    /** 用于多选表格，切换所有行的选中状态 */
+    toggleAllSelection() {
+      let table = this.$refs['el-table'];
+      table.toggleAllSelection();
+    },
+
     /** 用于可展开表格与树形表格，切换某一行的展开状态，如果使用了第二个参数，则是设置这一行展开与否（expanded 为 true 则展开） */
     toggleRowExpansion(row, selected) {
       if (row) {
@@ -622,6 +628,24 @@ export default {
           table.toggleRowExpansion(row, selected);
         }
       });
+    },
+
+    /** 用于单选表格，设定某一行为选中行，如果调用时不加参数，则会取消目前高亮行的选中状态 */
+    setCurrentRow(row) {
+      let table = this.$refs['el-table'];
+      table.setCurrentRow(row);
+    },
+
+    /** 用于清空排序条件，数据会恢复成未排序的状态 */
+    clearSort() {
+      let table = this.$refs['el-table'];
+      table.clearSort();
+    },
+
+    /** 不传入参数时用于清空所有过滤条件，数据会恢复成未过滤的状态，也可传入由columnKey组成的数组以清除指定列的过滤条件 */
+    clearFilter(columnKey) {
+      let table = this.$refs['el-table'];
+      table.clearFilter(columnKey);
     },
 
     /** 重新设置一下table布局，以防table样式错误 */

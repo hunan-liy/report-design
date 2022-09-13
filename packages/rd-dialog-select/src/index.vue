@@ -81,7 +81,6 @@ import {
   addResizeListener,
   removeResizeListener
 } from 'element-ui/src/utils/resize-event';
-// import { valueEquals } from 'element-ui/src/utils/util';
 import OpenDialog from './components/open-dialog.vue';
 import Clickoutside from 'element-ui/src/utils/clickoutside';
 import { cloneDeep } from 'lodash';
@@ -119,8 +118,6 @@ export default {
       default: false
     },
     size: String,
-    /** 匹配关系配置 存什么显示什么 */
-    // rowProp: String,
     /** 匹配关系配置 存value显示label */
     rowProps: {
       type: Object
@@ -141,11 +138,6 @@ export default {
     },
     /** 为rd-table特殊添加的，正常使用过程中是不需要的 */
     rowData: {
-      type: Object
-    },
-
-    /** 为rd-table特殊添加的，正常使用过程中是不需要的 */
-    hooks: {
       type: Object
     },
     /** 为rd-table特殊添加的，正常使用过程中是不需要的 */
@@ -179,11 +171,7 @@ export default {
           value = this.value_.join('');
         }
       } else {
-        // if (this.type === this.typeMap.props) {
         value = (this.value_ || {}).label || null;
-        // } else {
-        //   value = this.value_;
-        // }
       }
       return value;
     },
@@ -209,7 +197,6 @@ export default {
     /** 是否显close闭图标 */
     showClose() {
       let hasValue = false;
-      // if (this.type === this.typeMap.props) {
       if (this.multiple) {
         if (Array.isArray(this.value_) && this.value_.length > 0) {
           hasValue = true;
@@ -224,21 +211,6 @@ export default {
           hasValue = true;
         }
       }
-      // } else if (this.type === this.typeMap.prop) {
-      //   if (this.multiple) {
-      //     if (Array.isArray(this.value_) && this.value_.length > 0) {
-      //       hasValue = true;
-      //     }
-      //   } else {
-      //     if (
-      //       this.value_ !== undefined &&
-      //       this.value_ !== null &&
-      //       this.value_ !== ''
-      //     ) {
-      //       hasValue = true;
-      //     }
-      //   }
-      // }
       let criteria =
         this.clearable &&
         !this.selectDisabled &&
@@ -249,24 +221,13 @@ export default {
 
     /** 组件类型 */
     type() {
-      // if (this.rowProps) {
       return typeMap.props;
-      // } else {
-      //   return typeMap.prop;
-      // }
     },
     /** 匹配关系 */
     getRowProps() {
-      // if (this.type === this.typeMap.props) {
       return {
         ...this.rowProps
       };
-      // } else {
-      //   return {
-      //     value: this.rowProp,
-      //     label: this.rowProp
-      //   };
-      // }
     }
   },
   mounted() {
@@ -309,24 +270,6 @@ export default {
           }
         ];
       }
-      // } else if (this.type === this.typeMap.prop) {
-      //   this.value_ = value;
-      //   if (this.multiple) {
-      //     this.selected = cloneDeep(value || []).map((ele) => {
-      //       return {
-      //         [this.getRowProps.value]: ele
-      //       };
-      //     });
-      //   } else {
-      //     this.selected = [
-      //       {
-      //         [this.getRowProps.value]: value
-      //       }
-      //     ];
-      //   }
-      // } else {
-      //   this.value_ = value;
-      // }
     },
 
     /** 选择按钮点击事件 */
@@ -388,31 +331,6 @@ export default {
           value = null;
         }
       }
-      // } else if (this.type === this.typeMap.prop) {
-      //   if (this.multiple) {
-      //     value = cloneDeep(this.value_);
-      //     rows_ = cloneDeep(this.selected);
-      //     rows.forEach((ele) => {
-      //       let index = this.selected.findIndex((e) => {
-      //         return e[this.getRowProps.value] === ele[this.getRowProps.value];
-      //       });
-
-      //       if (index === -1) {
-      //         value.push(ele[this.getRowProps.value] || '');
-      //         rows_.push(ele);
-      //       } else {
-      //         // 因为回显时自己组装的selected数据字段可能是不完整的，所以这里如果存在重复数据时，需要替换到原来不完整的数据
-      //         rows_[index] = ele;
-      //       }
-      //     });
-      //   } else {
-      //     if (rows.length > 0) {
-      //       value = (rows[0] || {})[this.getRowProps.value];
-      //     } else {
-      //       value = null;
-      //     }
-      //   }
-      // }
       this.$emit('input', value);
       this.emitChange(value, rows_);
       this.visible = false;
